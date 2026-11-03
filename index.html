@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Management System - Own to Karigar</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .editable-cell { background: #0f172a; border: 1px solid #334155; border-radius: .25rem; padding: .25rem .5rem; font-size: .875rem; color: #e2e8f0; width: 100%; }
+        .save-btn { background: #16a34a; color: #fff; font-size: .75rem; padding: .25rem .5rem; border-radius: .25rem; }
+        .cancel-btn { background: #dc2626; color: #fff; font-size: .75rem; padding: .25rem .5rem; border-radius: .25rem; }
+        .rv-btn { padding: .4rem .9rem; border-radius: .4rem; font-size: .8rem; font-weight: 600; background: #334155; color: #cbd5e1; }
+        .rv-btn.rv-active { background: #ea580c; color: #fff; }
+        .inp { background: #0f172a; border: 1px solid #334155; border-radius: .5rem; padding: .5rem .75rem; font-size: .875rem; color: #e2e8f0; width: 100%; }
+        .inp:focus { outline: none; border-color: #f59e0b; }
+        .btn-del { background: #dc2626; color: #fff; font-size: .75rem; padding: .25rem .6rem; border-radius: .25rem; }
+        .btn-del:hover { background: #ef4444; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100">
+
+    <!-- Header with Main Tabs -->
+    <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-900/95 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-lg bg-amber-500 flex items-center justify-center font-bold text-slate-950 text-xl">💎</div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">Gold Management System</h1>
+                        <p class="text-xs text-slate-400">Complete Consignment & Tracking</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-sm text-slate-400">
+                        <span class="font-medium text-slate-200" id="current-date">Today</span>
+                    </div>
+                    <button onclick="openSettingsModal()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium text-sm py-2 px-4 rounded-lg transition">
+                        ⚙️ Settings
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+
+        <!-- ===== OWN TO KARIGAR PAGE ===== -->
+        <div id="page-karigar" class="space-y-8">
+
+            <!-- Owner's Balance -->
+            <section class="bg-gradient-to-r from-amber-900/30 to-orange-900/20 border border-amber-700/50 p-6 rounded-xl">
+                <h2 class="text-lg font-semibold text-amber-300 flex items-center gap-2 mb-4">
+                    <span class="text-2xl">👨‍💼</span> OWNER'S GOLD BALANCE
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <div class="bg-slate-900/50 border border-amber-500/40 rounded-lg p-4">
+                        <p class="text-xs text-slate-400 mb-1">24K In Hand</p>
+                        <p class="text-2xl font-bold text-amber-400" id="bal-24">0.00 gm</p>
+                    </div>
+                    <div class="bg-slate-900/50 border border-yellow-500/40 rounded-lg p-4">
+                        <p class="text-xs text-slate-400 mb-1">22K In Hand</p>
+                        <p class="text-2xl font-bold text-yellow-300" id="bal-22">0.00 gm</p>
+                    </div>
+                    <div class="bg-slate-900/50 border border-purple-700/30 rounded-lg p-4">
+                        <p class="text-xs text-slate-400 mb-1">22K With Karigars</p>
+                        <p class="text-2xl font-bold text-purple-400" id="bal-with-karigar">0.00 gm</p>
+                    </div>
+                    <div class="bg-slate-900/50 border border-emerald-700/30 rounded-lg p-4">
+                        <p class="text-xs text-slate-400 mb-1">Finished Goods Received</p>
+                        <p class="text-2xl font-bold text-emerald-400" id="bal-fg">0.00 gm</p>
+                    </div>
+                    <div class="bg-slate-900/50 border border-orange-700/30 rounded-lg p-4">
+                        <p class="text-xs text-slate-400 mb-1">Total Wastage</p>
+                        <p class="text-2xl font-bold text-orange-400" id="bal-wastage">0.00 gm</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1. Consignment Setup & Carat Conversion -->
+            <section class="bg-slate-800/40 border border-slate-700/50 p-6 rounded-xl space-y-6">
+                <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span> 1. Gold Consignment Setup & Carat Conversion
+                </h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- A. Consignment -->
+                    <div class="bg-slate-900/50 border border-slate-700/30 rounded-lg p-4 space-y-3">
+                        <p class="text-sm font-semibold text-blue-300">A. Receive Gold (Consignment)</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Carat</label>
+                                <select id="cons-carat" class="inp">
+                                    <option value="">-- Select --</option>
+                                    <option value="24">24K</option>
+                                    <option value="22">22K</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Weight (gm)</label>
+                                <input type="number" id="cons-weight" step="0.001" min="0" placeholder="e.g., 100" class="inp">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Date</label>
+                                <input type="date" id="cons-date" class="inp">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Description</label>
+                                <input type="text" id="cons-desc" placeholder="Gold Purchase 99.5" class="inp">
+                            </div>
+                            <div class="col-span-2">
+                                <button onclick="receiveConsignment()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm py-2 px-4 rounded-lg transition">
+                                    ✓ Add to Balance
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- B. Conversion -->
+                    <div class="bg-slate-900/50 border border-slate-700/30 rounded-lg p-4 space-y-3">
+                        <p class="text-sm font-semibold text-emerald-300">B. Convert 24K → 22K</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">24K Weight to Convert (gm)</label>
+                                <input type="number" id="conv-weight" step="0.001" min="0" placeholder="e.g., 10" oninput="updateConvPreview()" class="inp">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Date</label>
+                                <input type="date" id="conv-date" class="inp">
+                            </div>
+                            <div class="col-span-2 text-sm text-slate-300 bg-slate-900 border border-slate-700 rounded-lg p-3">
+                                Will add: <span id="conv-preview" class="font-semibold text-emerald-400">-- gm 22K</span>
+                                <span class="text-xs text-slate-500 block mt-1">Factor: <span id="conv-factor-show">1.085</span> (change in Settings)</span>
+                            </div>
+                            <div class="col-span-2">
+                                <button onclick="performConversion()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm py-2 px-4 rounded-lg transition">
+                                    🔄 Convert
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gold Available -->
+                    <div class="bg-slate-900/50 border border-slate-700/30 rounded-lg p-4 space-y-3">
+                        <p class="text-sm font-semibold text-amber-300">Gold Available in Hand</p>
+                        <div class="space-y-3 pt-2">
+                            <div class="flex justify-between text-sm"><span class="text-slate-400">24K</span><span id="avail-24" class="font-semibold text-amber-400">0.00 gm</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-slate-400">22K</span><span id="avail-22" class="font-semibold text-yellow-300">0.00 gm</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consignment & Conversion Log -->
+                <div class="overflow-x-auto">
+                    <p class="text-xs font-semibold text-slate-400 mb-2">Consignment & Conversion Log</p>
+                    <table class="w-full text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-800/50 border border-slate-700">
+                                <th class="px-3 py-2 text-left text-slate-400 font-medium">Date</th>
+                                <th class="px-3 py-2 text-left text-slate-400 font-medium">Type</th>
+                                <th class="px-3 py-2 text-left text-slate-400 font-medium">Description</th>
+                                <th class="px-3 py-2 text-center text-slate-400 font-medium">Carat</th>
+                                <th class="px-3 py-2 text-right text-slate-400 font-medium">Weight (gm)</th>
+                                <th class="px-3 py-2 text-center text-slate-400 font-medium">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cons-log-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 2. Issue Metal to Karigar -->
+            <section class="bg-slate-800/40 border border-slate-700/50 p-6 rounded-xl space-y-4">
+                <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-purple-500"></span> 2. Issue Metal to Karigar (Issue Slip)
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-2">Karigar Name</label>
+                        <div class="flex gap-2">
+                            <select id="issue-karigar" class="inp focus:border-purple-500"></select>
+                            <button onclick="openSettingsModal()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 rounded-lg transition" title="Add/Edit Karigar">+</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-2">Carat Issued</label>
+                        <select id="issue-carat" class="inp" onchange="updateIssueTotal()">
+                            <option value="22" selected>22K</option>
+                            <option value="24">24K</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-2">Date</label>
+                        <input type="date" id="issue-date" class="inp">
+                    </div>
+                    <div class="flex items-end">
+                        <div class="w-full text-sm text-slate-300 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+                            Total issued: <span id="issue-total" class="font-semibold text-amber-400">0.00 gm</span>
+                            <span class="text-xs text-slate-500 block">In hand: <span id="issue-avail">0.00 gm</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-2">Items to make (one line per product)</label>
+                    <div id="issue-lines" class="space-y-2"></div>
+                    <div class="flex gap-2 mt-3">
+                        <button onclick="addIssueLine()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm py-2 px-4 rounded-lg transition">+ Add Item</button>
+                        <button onclick="issueToKarigar()" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-medium text-sm py-2 px-4 rounded-lg transition">✓ Issue Slip</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Active Workshop Floor Ledger -->
+            <section class="bg-slate-800/40 border border-slate-700/50 p-6 rounded-xl space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-orange-500"></span> 3. Active Workshop Floor Ledger
+                    </h2>
+                    <div class="flex gap-2">
+                        <button onclick="downloadLedger('excel')" class="bg-green-600 hover:bg-green-500 text-white font-medium text-xs py-1 px-3 rounded-lg transition">📊 Excel</button>
+                        <button onclick="downloadLedger('pdf')" class="bg-red-600 hover:bg-red-500 text-white font-medium text-xs py-1 px-3 rounded-lg transition">📄 PDF</button>
+                    </div>
+                </div>
+
+                <!-- Receive finished goods -->
+                <div class="bg-slate-900/50 border border-emerald-700/30 rounded-lg p-4 space-y-3">
+                    <p class="text-sm font-semibold text-emerald-300">Receive Finished Goods from Karigar</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3">
+                        <div class="lg:col-span-2">
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Job (Slip · Karigar · Item)</label>
+                            <select id="recv-line" class="inp" onchange="updateRecvPreview()"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Date</label>
+                            <input type="date" id="recv-date" class="inp">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Finished Goods (gm)</label>
+                            <input type="number" id="recv-fg" step="0.001" min="0" placeholder="e.g., 9.80" oninput="updateRecvPreview()" class="inp">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Pieces (optional)</label>
+                            <input type="number" id="recv-pieces" step="1" min="0" placeholder="e.g., 5" class="inp">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="recv-close" checked onchange="updateRecvPreview()" class="w-4 h-4 accent-emerald-500">
+                            <label for="recv-close" class="text-xs text-slate-300">Job complete<br><span class="text-slate-500">(rest of metal = wastage)</span></label>
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="receiveFinished()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm py-2 px-4 rounded-lg transition">✓ Receive</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs text-slate-300 pt-1">
+                        <div>Std wastage %: <span id="recv-pct" class="font-semibold text-slate-200">--</span></div>
+                        <div>Wastage: <span id="recv-wastage" class="font-semibold text-orange-400">--</span></div>
+                        <div>Metal returned: <span id="recv-returned" class="font-semibold text-emerald-400">--</span></div>
+                        <div>Pending after: <span id="recv-pending-after" class="font-semibold text-purple-400">--</span></div>
+                        <div class="text-slate-500">Metal returned = finished goods + wastage</div>
+                    </div>
+                </div>
+
+                <!-- Open jobs table -->
+                <div class="overflow-x-auto">
+                    <p class="text-xs font-semibold text-slate-400 mb-2">Jobs (issue lines)</p>
+                    <table class="w-full text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-800/50 border border-slate-700">
+                                <th class="px-3 py-2 text-left text-slate-400 font-medium">Slip No</th>
+                                <th class="px-3 py-2 text-left text-slate-400 font-medium">Karigar</th>
+                                <th class="px-3 py-2 text-center text-slate-400 font-medium">Carat</th>
+                                <th class="px-3 py-2 text-left text-slate-400 font-medium">Item</th>
+                                <th class="px-3 py-2 text-right text-slate-400 font-medium">Issued (gm)</th>
+                                <th class="px-3 py-2 text-right text-slate-400 font-medium">Finished (gm)</th>
+                                <th class="px-3 py-2 text-right text-slate-400 font-medium">Wastage (%)</th>
+                                <th class="px-3 py-2 text-right text-slate-400 font-medium">Wastage (gm)</th>
+                                <th class="px-3 py-2 text-right text-slate-400 font-medium">Pending (gm)</th>
+                                <th class="px-3 py-2 text-center text-slate-400 font-medium">Issued Date</th>
+                                <th class="px-3 py-2 text-center text-slate-400 font-medium">Status</th>
+                                <th class="px-3 py-2 text-center text-slate-400 font-medium">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- Receipts log -->
+                <div class="overflow-x-auto">
+                    <p class="text-xs font-semibold text-slate-400 mb-2">Finished Goods Receipts (trace log)</p>
+                    <table class="w-full text-sm border-collapse" id="ledger-table">
+                        <thead>
+                            <tr class="bg-slate-800/50 border border-slate-700">
+                                <th class="px-3 py-2 text-left text-slate-400 font-medium">Date</th>
+                                <th class="px-3 py-2 text-left text-slate-400 font-medium">Slip No</th>
+                                <th class="px-3 py-2 text-left text-slate-400 font-medium">Karigar</th>
+                                <th class="px-3 py-2 text-left text-slate-400 font-medium">Item</th>
+                                <th class="px-3 py-2 text-right text-slate-400 font-medium">Finished (gm)</th>
+                                <th class="px-3 py-2 text-right text-slate-400 font-medium">Wastage (%)</th>
+                                <th class="px-3 py-2 text-right text-slate-400 font-medium">Wastage (gm)</th>
+                                <th class="px-3 py-2 text-right text-slate-400 font-medium">Pieces</th>
+                                <th class="px-3 py-2 text-center text-slate-400 font-medium">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receipts-log-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 4. Owner's Passbook -->
+            <section class="bg-slate-800/40 border border-slate-700/50 p-6 rounded-xl space-y-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span> 4. Owner's Gold Passbook
+                    </h2>
+                    <div class="flex gap-2">
+                        <button onclick="downloadPassbook('excel')" class="bg-green-600 hover:bg-green-500 text-white font-medium text-xs py-1 px-3 rounded-lg transition">📊 Excel</button>
+                        <button onclick="downloadPassbook('pdf')" class="bg-red-600 hover:bg-red-500 text-white font-medium text-xs py-1 px-3 rounded-lg transition">📄 PDF</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto bg-slate-900/50 border border-slate-700/30 rounded-lg">
+                    <table class="w-full text-xs" id="passbook-table">
+                        <thead class="bg-slate-800/50 border-b border-slate-700">
+                            <tr>
+                                <th rowspan="2" class="px-3 py-2 text-left text-slate-400 align-bottom">Date</th>
+                                <th rowspan="2" class="px-3 py-2 text-left text-slate-400 align-bottom">Description</th>
+                                <th colspan="3" class="px-3 py-2 text-center text-amber-400 font-semibold border-l border-slate-700">24K</th>
+                                <th colspan="3" class="px-3 py-2 text-center text-yellow-300 font-semibold border-l border-slate-700">22K</th>
+                            </tr>
+                            <tr>
+                                <th class="px-3 py-2 text-right text-slate-400 border-l border-slate-700">Issue (gm)</th>
+                                <th class="px-3 py-2 text-right text-slate-400">Received (gm)</th>
+                                <th class="px-3 py-2 text-right text-amber-400">Balance (gm)</th>
+                                <th class="px-3 py-2 text-right text-slate-400 border-l border-slate-700">Issue (gm)</th>
+                                <th class="px-3 py-2 text-right text-slate-400">Received (gm)</th>
+                                <th class="px-3 py-2 text-right text-yellow-300">Balance (gm)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="passbook-body"></tbody>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-amber-900/20 border border-amber-700/30 rounded-lg p-3">
+                        <p class="text-sm"><span class="text-slate-400">Closing 24K:</span> <span class="font-bold text-amber-400 text-lg" id="passbook-close-24">0.00 gm</span></p>
+                    </div>
+                    <div class="bg-yellow-900/20 border border-yellow-700/30 rounded-lg p-3">
+                        <p class="text-sm"><span class="text-slate-400">Closing 22K:</span> <span class="font-bold text-yellow-300 text-lg" id="passbook-close-22">0.00 gm</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Karigar Passbook & Reports -->
+            <section class="bg-slate-800/40 border border-slate-700/50 p-6 rounded-xl space-y-4">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-pink-500"></span> 5. Karigar Passbook & Reports
+                    </h2>
+                    <div class="flex gap-2">
+                        <button onclick="downloadKarigarReport('excel')" class="bg-green-600 hover:bg-green-500 text-white font-medium text-xs py-1 px-3 rounded-lg transition">📊 Excel (all reports)</button>
+                        <button onclick="downloadKarigarReport('pdf')" class="bg-red-600 hover:bg-red-500 text-white font-medium text-xs py-1 px-3 rounded-lg transition">📄 PDF (this view)</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Karigar (date-wise passbook)</label>
+                        <select id="kp-karigar" class="inp" onchange="renderKarigarReport()"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">From</label>
+                        <input type="date" id="kp-from" class="inp" onchange="renderKarigarReport()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">To</label>
+                        <input type="date" id="kp-to" class="inp" onchange="renderKarigarReport()">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="clearKpFilters()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm py-2 rounded-lg transition">Clear Filters</button>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 flex-wrap">
+                    <button class="rv-btn rv-active" data-v="date" onclick="setReportView('date')">Date-wise Passbook</button>
+                    <button class="rv-btn" data-v="karigar" onclick="setReportView('karigar')">Karigar-wise</button>
+                    <button class="rv-btn" data-v="overall" onclick="setReportView('overall')">Overall</button>
+                </div>
+
+                <div id="kp-cards" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"></div>
+
+                <div id="kp-table-wrap" class="overflow-x-auto bg-slate-900/50 border border-slate-700/30 rounded-lg"></div>
+                <p class="text-xs text-slate-500">Date-wise view uses the karigar and date filters. Karigar-wise and Overall use the date range only. "Pending" is always the current position.</p>
+            </section>
+
+        </div>
+
+
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="bg-slate-800 rounded-xl border border-slate-700 p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-white">⚙️ Settings</h2>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-200 text-2xl">✕</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <!-- Categories -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-amber-300">📦 Item Categories & Wastage</h3>
+                    <div class="bg-slate-900/50 border border-slate-700/30 rounded-lg p-4">
+                        <div class="flex gap-2">
+                            <input type="text" id="new-category-name" placeholder="Item (e.g., Earring)" class="flex-1 bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
+                            <input type="number" id="new-category-wastage" placeholder="Wastage %" step="0.1" min="0" max="100" class="w-24 bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
+                            <button onclick="addCategory()" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 rounded transition">+ Add</button>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/50 border border-slate-700/30 rounded-lg p-4">
+                        <div class="text-xs font-semibold text-slate-400 mb-3 pb-2 border-b border-slate-700">Active Categories</div>
+                        <div id="categories-list" class="space-y-2"></div>
+                    </div>
+                </div>
+
+                <!-- Karigars -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-purple-300">👨‍🔧 Karigar Names</h3>
+                    <div class="bg-slate-900/50 border border-slate-700/30 rounded-lg p-4">
+                        <div class="flex gap-2">
+                            <input type="text" id="new-karigar-name" placeholder="Karigar name (e.g., A. Karigar)" class="flex-1 bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-purple-500">
+                            <button onclick="addKarigar()" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 rounded transition">+ Add</button>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/50 border border-slate-700/30 rounded-lg p-4">
+                        <div class="text-xs font-semibold text-slate-400 mb-3 pb-2 border-b border-slate-700">Active Karigars</div>
+                        <div id="karigars-list" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversion factor & backup -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                <div class="bg-slate-900/50 border border-slate-700/30 rounded-lg p-4 space-y-3">
+                    <h3 class="text-sm font-semibold text-emerald-300">Conversion Factor (24K → 22K)</h3>
+                    <div class="flex gap-2">
+                        <input type="number" id="conv-factor" step="0.001" min="0.001" class="flex-1 bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                        <button onclick="setFactor()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 rounded transition">Save</button>
+                    </div>
+                    <p class="text-xs text-slate-500">10 gm of 24K becomes 10 × factor gm of 22K. Default 1.085 (from trf.xlsx).</p>
+                </div>
+                <div class="bg-slate-900/50 border border-slate-700/30 rounded-lg p-4 space-y-3">
+                    <h3 class="text-sm font-semibold text-blue-300">Data Backup</h3>
+                    <p class="text-xs text-slate-500">All entries are saved in this browser automatically. Use backup to keep a copy or move to another computer.</p>
+                    <div class="flex gap-2">
+                        <button onclick="exportBackup()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded transition">⬇ Download Backup</button>
+                        <label class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium py-2 rounded transition text-center cursor-pointer">
+                            ⬆ Restore Backup
+                            <input type="file" id="backup-file" accept="application/json" class="hidden" onchange="importBackup(this)">
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-6 pt-6 border-t border-slate-700">
+                <button onclick="closeSettingsModal()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium py-2 px-4 rounded-lg transition">✓ Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONSTANTS & STORAGE =====
+        const STORE_KEY = 'gold-mgmt-own-karigar-v2';
+        let issueLines = [{ catId: '', issued: '' }];
+        let reportView = 'date';
+
+        function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+        function f2(n) { return (Number(n) || 0).toFixed(2); }
+        function round3(n) { return Math.round((Number(n) || 0) * 1000) / 1000; }
+        function num(v) { const x = parseFloat(v); return isNaN(x) ? 0 : x; }
+        function val(id) { return document.getElementById(id).value; }
+        function setText(id, t) { document.getElementById(id).textContent = t; }
+        function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+        function todayIso() {
+            const d = new Date();
+            return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+        }
+        function fmtDate(iso) { return iso ? iso.split('-').reverse().join('.') : ''; }
+        function inRange(d, from, to) { return (!from || d >= from) && (!to || d <= to); }
+        function byDateSeq(a, b) { return a.date === b.date ? a.seq - b.seq : (a.date < b.date ? -1 : 1); }
+
+        function defaultDb() {
+            return {
+                factor: 1.085,
+                seq: 0,
+                slipCount: 0,
+                cats: [
+                    { id: uid(), name: 'Ring', wastage: 2.5 },
+                    { id: uid(), name: 'Pendant', wastage: 3.0 },
+                    { id: uid(), name: 'Necklace', wastage: 4.0 },
+                    { id: uid(), name: 'Bracelet', wastage: 2.0 },
+                    { id: uid(), name: 'Earring', wastage: 2.0 }
+                ],
+                karigars: [
+                    { id: uid(), name: 'A. Karigar' },
+                    { id: uid(), name: 'B. Karigar' },
+                    { id: uid(), name: 'C. Karigar' }
+                ],
+                receipts: [],      // gold received from client: {id,date,carat,weight,desc,seq}
+                conversions: [],   // 24K -> 22K: {id,date,weight,seq}
+                slips: [],         // issue slips: {id,no,date,karigarId,carat,lines:[{id,catId,issued}],seq}
+                returns: []        // finished goods receipts: {id,date,slipId,lineId,catId,fg,wastage,pieces,seq}
+            };
+        }
+
+        function loadDb() {
+            try {
+                const raw = localStorage.getItem(STORE_KEY);
+                if (raw) return Object.assign(defaultDb(), JSON.parse(raw));
+            } catch (e) { console.warn('Could not read saved data', e); }
+            return defaultDb();
+        }
+
+        function saveDb() {
+            try { localStorage.setItem(STORE_KEY, JSON.stringify(db)); }
+            catch (e) { console.warn('Could not save data', e); }
+        }
+
+        let db = loadDb();
+
+        function nextSeq() { db.seq += 1; return db.seq; }
+        function catById(id) { return db.cats.find(c => c.id === id); }
+        function karigarById(id) { return db.karigars.find(k => k.id === id); }
+        function catName(id) { const c = catById(id); return c ? c.name : '(removed)'; }
+        function karigarName(id) { const k = karigarById(id); return k ? k.name : '(removed)'; }
+        function slipById(id) { return db.slips.find(s => s.id === id); }
+
+        // ===== CORE CALCULATIONS =====
+
+        // Each issue line with its receipts and pending quantity
+        function allLines() {
+            const out = [];
+            db.slips.forEach(slip => slip.lines.forEach(line => {
+                const rs = db.returns.filter(r => r.lineId === line.id);
+                const fg = rs.reduce((a, r) => a + r.fg, 0);
+                const wastage = rs.reduce((a, r) => a + r.wastage, 0);
+                const pieces = rs.reduce((a, r) => a + (r.pieces || 0), 0);
+                out.push({
+                    slip, line, rcount: rs.length,
+                    fg: round3(fg), wastage: round3(wastage), pieces,
+                    pending: round3(line.issued - fg - wastage)
+                });
+            }));
+            return out;
+        }
+
+        function findLine(lineId) { return allLines().find(x => x.line.id === lineId) || null; }
+
+        // Owner's passbook events, same layout as trf.xlsx
+        function buildPassbook() {
+            const ev = [];
+            db.receipts.forEach(r => ev.push({
+                date: r.date, seq: r.seq, desc: r.desc || 'Gold Consignment Received',
+                i24: 0, r24: r.carat === '24' ? r.weight : 0,
+                i22: 0, r22: r.carat === '22' ? r.weight : 0
+            }));
+            db.conversions.forEach(c => ev.push({
+                date: c.date, seq: c.seq,
+                desc: `Convert 24 to 22 K (${f2(c.weight)} gm → ${f2(c.weight * db.factor)} gm)`,
+                i24: c.weight, r24: 0,
+                i22: 0, r22: c.weight * db.factor
+            }));
+            db.slips.forEach(s => {
+                const total = s.lines.reduce((a, l) => a + l.issued, 0);
+                const detail = s.lines.map(l => `${catName(l.catId)} ${f2(l.issued)}`).join(', ');
+                ev.push({
+                    date: s.date, seq: s.seq,
+                    desc: `Metal Issue To ${karigarName(s.karigarId)} (${s.no}: ${detail})`,
+                    i24: s.carat === '24' ? total : 0, r24: 0,
+                    i22: s.carat === '22' ? total : 0, r22: 0
+                });
+            });
+            db.returns.forEach(r => {
+                const s = slipById(r.slipId);
+                const carat = s ? s.carat : '22';
+                const amt = r.fg + r.wastage;
+                ev.push({
+                    date: r.date, seq: r.seq,
+                    desc: `Received From ${karigarName(s ? s.karigarId : null)} – ${catName(r.catId)} (FG ${f2(r.fg)} + Wastage ${f2(r.wastage)})`,
+                    i24: 0, r24: carat === '24' ? amt : 0,
+                    i22: 0, r22: carat === '22' ? amt : 0
+                });
+            });
+            ev.sort(byDateSeq);
+            let b24 = 0, b22 = 0;
+            return ev.map(e => {
+                b24 = round3(b24 + e.r24 - e.i24);
+                b22 = round3(b22 + e.r22 - e.i22);
+                return { ...e, b24, b22 };
+            });
+        }
+
+        function balances() {
+            const pb = buildPassbook();
+            if (!pb.length) return { b24: 0, b22: 0 };
+            const last = pb[pb.length - 1];
+            return { b24: last.b24, b22: last.b22 };
+        }
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', () => {
+            setText('current-date', new Date().toLocaleDateString());
+            ['cons-date', 'conv-date', 'issue-date', 'recv-date'].forEach(id => document.getElementById(id).value = todayIso());
+            renderIssueLines();
+            renderAll();
+        });
+
+        function renderAll() {
+            renderBalances();
+            renderConsignmentLog();
+            renderIssueSelects();
+            renderLedger();
+            renderReceiveSelect();
+            renderPassbook();
+            renderKarigarReport();
+            renderSettings();
+        }
+
+        function renderBalances() {
+            const b = balances();
+            const pend = allLines().reduce((a, x) => a + x.pending, 0);
+            const fg = db.returns.reduce((a, r) => a + r.fg, 0);
+            const w = db.returns.reduce((a, r) => a + r.wastage, 0);
+            setText('bal-24', f2(b.b24) + ' gm');
+            setText('bal-22', f2(b.b22) + ' gm');
+            setText('bal-with-karigar', f2(pend) + ' gm');
+            setText('bal-fg', f2(fg) + ' gm');
+            setText('bal-wastage', f2(w) + ' gm');
+            setText('avail-24', f2(b.b24) + ' gm');
+            setText('avail-22', f2(b.b22) + ' gm');
+            setText('conv-factor-show', db.factor);
+            updateIssueTotal();
+        }
+
+        // ===== SETTINGS =====
+        function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); renderSettings(); }
+        function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+
+        function renderSettings() {
+            document.getElementById('conv-factor').value = db.factor;
+            document.getElementById('categories-list').innerHTML = db.cats.map(c => `
+                <div class="bg-slate-800/50 border border-slate-700/30 rounded p-3 flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-slate-200 font-medium">${esc(c.name)}</p>
+                        <p class="text-xs text-slate-400">Wastage: <span class="text-amber-400">${c.wastage}%</span></p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="editCategory('${c.id}')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1 rounded transition">Edit</button>
+                        <button onclick="deleteCategory('${c.id}')" class="bg-red-600 hover:bg-red-500 text-white text-xs px-3 py-1 rounded transition">Delete</button>
+                    </div>
+                </div>`).join('') || '<p class="text-xs text-slate-500">No categories yet</p>';
+
+            document.getElementById('karigars-list').innerHTML = db.karigars.map(k => `
+                <div class="bg-slate-800/50 border border-slate-700/30 rounded p-3 flex justify-between items-center">
+                    <p class="text-sm text-slate-200 font-medium">${esc(k.name)}</p>
+                    <div class="flex gap-2">
+                        <button onclick="editKarigar('${k.id}')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1 rounded transition">Edit</button>
+                        <button onclick="deleteKarigar('${k.id}')" class="bg-red-600 hover:bg-red-500 text-white text-xs px-3 py-1 rounded transition">Delete</button>
+                    </div>
+                </div>`).join('') || '<p class="text-xs text-slate-500">No karigars yet</p>';
+        }
+
+        function addCategory() {
+            const name = val('new-category-name').trim();
+            const wastage = parseFloat(val('new-category-wastage'));
+            if (!name || isNaN(wastage) || wastage < 0 || wastage > 100) { alert('Enter a valid item name and wastage %'); return; }
+            if (db.cats.some(c => c.name.toLowerCase() === name.toLowerCase())) { alert('Category already exists'); return; }
+            db.cats.push({ id: uid(), name, wastage });
+            document.getElementById('new-category-name').value = '';
+            document.getElementById('new-category-wastage').value = '';
+            saveDb(); renderAll();
+        }
+
+        function editCategory(id) {
+            const c = catById(id); if (!c) return;
+            const newName = prompt('Edit item name:', c.name); if (newName === null) return;
+            const newW = prompt('Edit wastage %:', c.wastage); if (newW === null) return;
+            const name = newName.trim();
+            if (!name) { alert('Name cannot be empty'); return; }
+            if (db.cats.some(x => x.id !== id && x.name.toLowerCase() === name.toLowerCase())) { alert('Category already exists'); return; }
+            c.name = name; c.wastage = parseFloat(newW) || 0;
+            saveDb(); renderAll();
+        }
+
+        function deleteCategory(id) {
+            if (db.slips.some(s => s.lines.some(l => l.catId === id))) { alert('This item is used in karigar issue slips and cannot be deleted'); return; }
+            if (!confirm(`Delete category "${catName(id)}"?`)) return;
+            db.cats = db.cats.filter(c => c.id !== id);
+            saveDb(); renderAll();
+        }
+
+        function addKarigar() {
+            const name = val('new-karigar-name').trim();
+            if (!name) { alert('Enter karigar name'); return; }
+            if (db.karigars.some(k => k.name.toLowerCase() === name.toLowerCase())) { alert('Karigar already exists'); return; }
+            db.karigars.push({ id: uid(), name });
+            document.getElementById('new-karigar-name').value = '';
+            saveDb(); renderAll();
+        }
+
+        function editKarigar(id) {
+            const k = karigarById(id); if (!k) return;
+            const name = prompt('Edit karigar name:', k.name);
+            if (!name || !name.trim()) return;
+            k.name = name.trim();
+            saveDb(); renderAll();
+        }
+
+        function deleteKarigar(id) {
+            if (db.slips.some(s => s.karigarId === id)) { alert('This karigar has issue slips and cannot be deleted'); return; }
+            if (!confirm(`Delete karigar "${karigarName(id)}"?`)) return;
+            db.karigars = db.karigars.filter(k => k.id !== id);
+            saveDb(); renderAll();
+        }
+
+        function setFactor() {
+            const f = parseFloat(val('conv-factor'));
+            if (!f || f <= 0) { alert('Enter a valid factor'); return; }
+            db.factor = f;
+            saveDb(); renderAll();
+        }
+
+        // ===== BACKUP =====
+        function exportBackup() {
+            const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Gold_Ledger_Backup_${todayIso()}.json`;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        }
+
+        function importBackup(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const obj = JSON.parse(reader.result);
+                    if (!obj.slips || !obj.cats || !obj.karigars) throw new Error('Not a valid backup file');
+                    if (!confirm('Restore this backup? Current data in this browser will be replaced.')) return;
+                    db = Object.assign(defaultDb(), obj);
+                    saveDb(); renderAll();
+                    alert('✓ Backup restored');
+                } catch (e) { alert('Could not restore: ' + e.message); }
+                input.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // ===== 1. CONSIGNMENT & CONVERSION =====
+        function receiveConsignment() {
+            const carat = val('cons-carat');
+            const weight = num(val('cons-weight'));
+            const date = val('cons-date');
+            const desc = val('cons-desc').trim();
+            if (!carat || weight <= 0 || !date) { alert('Select carat, enter weight and date'); return; }
+            db.receipts.push({ id: uid(), date, carat, weight, desc, seq: nextSeq() });
+            document.getElementById('cons-weight').value = '';
+            document.getElementById('cons-desc').value = '';
+            saveDb(); renderAll();
+            alert(`✓ ${f2(weight)} gm ${carat}K added to balance`);
+        }
+
+        function updateConvPreview() {
+            const w = num(val('conv-weight'));
+            setText('conv-preview', `${f2(w * db.factor)} gm 22K`);
+        }
+
+        function performConversion() {
+            const weight = num(val('conv-weight'));
+            const date = val('conv-date');
+            if (weight <= 0 || !date) { alert('Enter 24K weight and date'); return; }
+            const b = balances();
+            if (weight > b.b24 + 0.0001) { alert(`Only ${f2(b.b24)} gm of 24K in hand`); return; }
+            db.conversions.push({ id: uid(), date, weight, seq: nextSeq() });
+            document.getElementById('conv-weight').value = '';
+            updateConvPreview();
+            saveDb(); renderAll();
+            alert(`✓ Converted ${f2(weight)} gm 24K → ${f2(weight * db.factor)} gm 22K`);
+        }
+
+        function renderConsignmentLog() {
+            const items = [
+                ...db.receipts.map(r => ({ kind: 'receipt', id: r.id, date: r.date, seq: r.seq, type: 'Consignment', desc: r.desc || 'Gold Consignment Received', carat: r.carat, weight: r.weight })),
+                ...db.conversions.map(c => ({ kind: 'conversion', id: c.id, date: c.date, seq: c.seq, type: 'Conversion', desc: `Convert 24 to 22 K → ${f2(c.weight * db.factor)} gm 22K`, carat: '24→22', weight: c.weight }))
+            ].sort((a, b) => byDateSeq(b, a));
+            const tb = document.getElementById('cons-log-body');
+            if (!items.length) { tb.innerHTML = '<tr><td colspan="6" class="px-3 py-4 text-center text-slate-500 text-xs">No consignment or conversion entries yet</td></tr>'; return; }
+            tb.innerHTML = items.map(it => `
+                <tr class="border-b border-slate-700/30 hover:bg-slate-800/20">
+                    <td class="px-3 py-2 whitespace-nowrap">${fmtDate(it.date)}</td>
+                    <td class="px-3 py-2">${it.type}</td>
+                    <td class="px-3 py-2 text-xs">${esc(it.desc)}</td>
+                    <td class="px-3 py-2 text-center">${it.carat}K</td>
+                    <td class="px-3 py-2 text-right font-semibold text-amber-400">${f2(it.weight)}</td>
+                    <td class="px-3 py-2 text-center"><button onclick="deleteConsEntry('${it.kind}','${it.id}')" class="btn-del">Delete</button></td>
+                </tr>`).join('');
+        }
+
+        function deleteConsEntry(kind, id) {
+            if (!confirm('Delete this entry? Balances will be recalculated.')) return;
+            if (kind === 'receipt') db.receipts = db.receipts.filter(r => r.id !== id);
+            else db.conversions = db.conversions.filter(c => c.id !== id);
+            saveDb(); renderAll();
+        }
+
+        // ===== 2. ISSUE TO KARIGAR =====
+        function renderIssueSelects() {
+            const kSel = document.getElementById('issue-karigar');
+            const cur = kSel.value;
+            kSel.innerHTML = '<option value="">-- Select Karigar --</option>' +
+                db.karigars.map(k => `<option value="${k.id}">${esc(k.name)}</option>`).join('');
+            kSel.value = cur;
+
+            const kpSel = document.getElementById('kp-karigar');
+            const curKp = kpSel.value;
+            kpSel.innerHTML = '<option value="">All Karigars</option>' +
+                db.karigars.map(k => `<option value="${k.id}">${esc(k.name)}</option>`).join('');
+            kpSel.value = curKp;
+        }
+
+        function renderIssueLines() {
+            const wrap = document.getElementById('issue-lines');
+            wrap.innerHTML = issueLines.map((ln, i) => `
+                <div class="flex gap-2 items-center">
+                    <select class="inp flex-1" onchange="issueLines[${i}].catId=this.value">
+                        <option value="">-- Item / Category --</option>
+                        ${db.cats.map(c => `<option value="${c.id}" ${c.id === ln.catId ? 'selected' : ''}>${esc(c.name)} (wastage ${c.wastage}%)</option>`).join('')}
+                    </select>
+                    <input type="number" step="0.001" min="0" placeholder="gm" value="${ln.issued}" oninput="issueLines[${i}].issued=this.value; updateIssueTotal()" class="inp w-32">
+                    <button onclick="removeIssueLine(${i})" class="btn-del px-3 py-2" ${issueLines.length === 1 ? 'disabled style="opacity:.4"' : ''}>✕</button>
+                </div>`).join('');
+            updateIssueTotal();
+        }
+
+        function addIssueLine() {
+            if (issueLines.length >= 15) { alert('Maximum 15 items per slip'); return; }
+            issueLines.push({ catId: '', issued: '' });
+            renderIssueLines();
+        }
+
+        function removeIssueLine(i) {
+            if (issueLines.length === 1) return;
+            issueLines.splice(i, 1);
+            renderIssueLines();
+        }
+
+        function updateIssueTotal() {
+            const total = issueLines.reduce((a, l) => a + num(l.issued), 0);
+            setText('issue-total', f2(total) + ' gm');
+            const carat = document.getElementById('issue-carat') ? val('issue-carat') : '22';
+            const b = balances();
+            setText('issue-avail', f2(carat === '24' ? b.b24 : b.b22) + ' gm ' + carat + 'K');
+        }
+
+        function issueToKarigar() {
+            const karigarId = val('issue-karigar');
+            const carat = val('issue-carat');
+            const date = val('issue-date');
+            const lines = issueLines
+                .filter(l => l.catId && num(l.issued) > 0)
+                .map(l => ({ id: uid(), catId: l.catId, issued: round3(num(l.issued)) }));
+            if (!karigarId || !carat || !date || !lines.length) {
+                alert('Select karigar, carat, date and at least one item with weight');
+                return;
+            }
+            const total = lines.reduce((a, l) => a + l.issued, 0);
+            const b = balances();
+            const avail = carat === '24' ? b.b24 : b.b22;
+            if (total > avail + 0.0001) { alert(`Only ${f2(avail)} gm ${carat}K in hand. Issue is ${f2(total)} gm.`); return; }
+
+            db.slipCount += 1;
+            const no = 'KS-' + String(db.slipCount).padStart(4, '0');
+            db.slips.push({ id: uid(), no, date, karigarId, carat, lines, seq: nextSeq() });
+            issueLines = [{ catId: '', issued: '' }];
+            saveDb(); renderAll(); renderIssueLines();
+            alert(`✓ Slip ${no} issued to ${karigarName(karigarId)}: ${f2(total)} gm ${carat}K`);
+        }
+
+        // ===== 3. WORKSHOP FLOOR LEDGER =====
+        function renderReceiveSelect() {
+            const sel = document.getElementById('recv-line');
+            const cur = sel.value;
+            const open = allLines().filter(x => x.pending > 0.001)
+                .sort((a, b) => byDateSeq(a.slip, b.slip));
+            sel.innerHTML = '<option value="">-- Select Job --</option>' + open.map(x =>
+                `<option value="${x.line.id}">${x.slip.no} · ${esc(karigarName(x.slip.karigarId))} · ${esc(catName(x.line.catId))} · pending ${f2(x.pending)} gm</option>`
+            ).join('');
+            if (open.some(x => x.line.id === cur)) sel.value = cur;
+            updateRecvPreview();
+        }
+
+        // Complete job: wastage = metal still with karigar after FG (the actual loss).
+        // Partial delivery: wastage = FG x category standard wastage %.
+        function calcReceiptWastage(f, fg, close) {
+            if (close) return round3(Math.max(0, f.pending - fg));
+            const pct = (catById(f.line.catId) || {}).wastage || 0;
+            return round3(fg * pct / 100);
+        }
+
+        function updateRecvPreview() {
+            const f = findLine(val('recv-line'));
+            const fg = num(val('recv-fg'));
+            const close = document.getElementById('recv-close').checked;
+            if (!f) {
+                setText('recv-pct', '--'); setText('recv-wastage', '--');
+                setText('recv-returned', '--'); setText('recv-pending-after', '--');
+                return;
+            }
+            const pct = (catById(f.line.catId) || {}).wastage || 0;
+            const w = calcReceiptWastage(f, fg, close);
+            setText('recv-pct', pct + '%');
+            setText('recv-wastage', f2(w) + ' gm' + (fg > 0 ? ` (${f2(w / fg * 100)}% of FG)` : ''));
+            setText('recv-returned', f2(fg + w) + ' gm');
+            setText('recv-pending-after', f2(f.pending - fg - w) + ' gm');
+        }
+
+        function receiveFinished() {
+            const lineId = val('recv-line');
+            const date = val('recv-date');
+            const fg = num(val('recv-fg'));
+            const pieces = parseInt(val('recv-pieces')) || 0;
+            const f = findLine(lineId);
+            if (!f) { alert('Select a job'); return; }
+            if (!date || fg <= 0) { alert('Enter date and finished goods weight'); return; }
+            if (date < f.slip.date) { alert(`Receipt date cannot be before the issue date (${fmtDate(f.slip.date)})`); return; }
+            const close = document.getElementById('recv-close').checked;
+            const w = calcReceiptWastage(f, fg, close);
+            if (fg + w > f.pending + 0.0005) {
+                alert(`Only ${f2(f.pending)} gm is pending on this job. Finished goods + wastage = ${f2(fg + w)} gm.`);
+                return;
+            }
+            db.returns.push({ id: uid(), date, slipId: f.slip.id, lineId, catId: f.line.catId, fg: round3(fg), wastage: w, pieces, closed: close, seq: nextSeq() });
+            document.getElementById('recv-fg').value = '';
+            document.getElementById('recv-pieces').value = '';
+            updateRecvPreview();
+            saveDb(); renderAll();
+            alert(`✓ Received ${f2(fg)} gm ${catName(f.line.catId)} from ${karigarName(f.slip.karigarId)} · wastage ${f2(w)} gm`);
+        }
+
+        function renderLedger() {
+            const lines = allLines().sort((a, b) => byDateSeq(b.slip, a.slip));
+            const tb = document.getElementById('ledger-body');
+            if (!lines.length) {
+                tb.innerHTML = '<tr><td colspan="12" class="px-3 py-6 text-center text-slate-500 text-xs">No issue slips yet. Issue metal to a karigar above.</td></tr>';
+            } else {
+                tb.innerHTML = lines.map(x => {
+                    const pct = (catById(x.line.catId) || {}).wastage || 0;
+                    const done = x.pending <= 0.001;
+                    const hasReceipts = x.rcount > 0;
+                    const action = done ? '<span class="text-xs text-emerald-400">Closed</span>'
+                        : `<button onclick="pickLine('${x.line.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-1 px-2 rounded transition">Receive</button>`;
+                    const delSlip = !hasReceipts ? ` <button onclick="deleteSlip('${x.slip.id}')" class="btn-del">Delete</button>` : '';
+                    return `
+                    <tr class="bg-slate-800/20 hover:bg-slate-800/40 transition border-b border-slate-700/30">
+                        <td class="px-3 py-2 font-mono text-xs">${x.slip.no}</td>
+                        <td class="px-3 py-2">${esc(karigarName(x.slip.karigarId))}</td>
+                        <td class="px-3 py-2 text-center">${x.slip.carat}K</td>
+                        <td class="px-3 py-2">${esc(catName(x.line.catId))}</td>
+                        <td class="px-3 py-2 text-right font-semibold text-amber-400">${f2(x.line.issued)}</td>
+                        <td class="px-3 py-2 text-right text-emerald-400">${f2(x.fg)}</td>
+                        <td class="px-3 py-2 text-right text-slate-300">${pct}%</td>
+                        <td class="px-3 py-2 text-right text-orange-400">${f2(x.wastage)}</td>
+                        <td class="px-3 py-2 text-right text-purple-400">${f2(x.pending)}</td>
+                        <td class="px-3 py-2 text-center text-xs">${fmtDate(x.slip.date)}</td>
+                        <td class="px-3 py-2 text-center text-xs">${done ? 'Completed' : (hasReceipts ? 'Partly received' : 'Open')}</td>
+                        <td class="px-3 py-2 text-center whitespace-nowrap">${action}${delSlip}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            const rs = [...db.returns].sort((a, b) => byDateSeq(b, a));
+            const rb = document.getElementById('receipts-log-body');
+            if (!rs.length) {
+                rb.innerHTML = '<tr><td colspan="9" class="px-3 py-4 text-center text-slate-500 text-xs">No finished goods received yet</td></tr>';
+            } else {
+                rb.innerHTML = rs.map(r => {
+                    const s = slipById(r.slipId);
+                    const pct = (catById(r.catId) || {}).wastage || 0;
+                    return `
+                    <tr class="border-b border-slate-700/30 hover:bg-slate-800/20">
+                        <td class="px-3 py-2 whitespace-nowrap">${fmtDate(r.date)}</td>
+                        <td class="px-3 py-2 font-mono text-xs">${s ? s.no : '--'}</td>
+                        <td class="px-3 py-2">${esc(karigarName(s ? s.karigarId : null))}</td>
+                        <td class="px-3 py-2">${esc(catName(r.catId))}</td>
+                        <td class="px-3 py-2 text-right text-emerald-400">${f2(r.fg)}</td>
+                        <td class="px-3 py-2 text-right text-slate-300">${pct}%</td>
+                        <td class="px-3 py-2 text-right text-orange-400">${f2(r.wastage)}</td>
+                        <td class="px-3 py-2 text-right">${r.pieces || '-'}</td>
+                        <td class="px-3 py-2 text-center"><button onclick="deleteReturn('${r.id}')" class="btn-del">Delete</button></td>
+                    </tr>`;
+                }).join('');
+            }
+        }
+
+        function pickLine(lineId) {
+            document.getElementById('recv-line').value = lineId;
+            updateRecvPreview();
+            document.getElementById('recv-fg').focus();
+            document.getElementById('recv-line').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function deleteReturn(id) {
+            if (!confirm('Delete this finished goods receipt? The job will show the metal as pending again.')) return;
+            db.returns = db.returns.filter(r => r.id !== id);
+            saveDb(); renderAll();
+        }
+
+        function deleteSlip(id) {
+            if (db.returns.some(r => r.slipId === id)) { alert('Delete the receipts for this slip first'); return; }
+            if (!confirm('Delete this issue slip?')) return;
+            db.slips = db.slips.filter(s => s.id !== id);
+            saveDb(); renderAll();
+        }
+
+        // ===== 4. OWNER'S PASSBOOK =====
+        function cellNum(v) { return v > 0 ? f2(v) : '-'; }
+
+        function renderPassbook() {
+            const rows = buildPassbook();
+            const tb = document.getElementById('passbook-body');
+            if (!rows.length) {
+                tb.innerHTML = '<tr><td colspan="8" class="px-3 py-4 text-center text-slate-500">No transactions yet</td></tr>';
+            } else {
+                tb.innerHTML = rows.map(r => `
+                    <tr class="border-b border-slate-700/30 hover:bg-slate-800/20">
+                        <td class="px-3 py-2 whitespace-nowrap">${fmtDate(r.date)}</td>
+                        <td class="px-3 py-2 text-xs">${esc(r.desc)}</td>
+                        <td class="px-3 py-2 text-right text-red-400 border-l border-slate-700/40">${cellNum(r.i24)}</td>
+                        <td class="px-3 py-2 text-right text-green-400">${cellNum(r.r24)}</td>
+                        <td class="px-3 py-2 text-right font-semibold text-amber-400">${f2(r.b24)}</td>
+                        <td class="px-3 py-2 text-right text-red-400 border-l border-slate-700/40">${cellNum(r.i22)}</td>
+                        <td class="px-3 py-2 text-right text-green-400">${cellNum(r.r22)}</td>
+                        <td class="px-3 py-2 text-right font-semibold text-yellow-300">${f2(r.b22)}</td>
+                    </tr>`).join('');
+            }
+            const last = rows.length ? rows[rows.length - 1] : { b24: 0, b22: 0 };
+            setText('passbook-close-24', f2(last.b24) + ' gm');
+            setText('passbook-close-22', f2(last.b22) + ' gm');
+        }
+
+        function downloadPassbook(format) {
+            const rows = buildPassbook();
+            if (!rows.length) { alert('No data to download'); return; }
+            const date = todayIso();
+            if (format === 'excel') {
+                const aoa = [
+                    ['', '', '24K', '', '', '22K', '', ''],
+                    ['Date', 'Description', 'Issue', 'Received', 'Balance', 'Issue', 'Received', 'Balance'],
+                    ...rows.map(r => [
+                        fmtDate(r.date), r.desc,
+                        r.i24 || '', r.r24 || '', r.b24,
+                        r.i22 || '', r.r22 || '', r.b22
+                    ])
+                ];
+                const ws = XLSX.utils.aoa_to_sheet(aoa);
+                ws['!merges'] = [{ s: { r: 0, c: 2 }, e: { r: 0, c: 4 } }, { s: { r: 0, c: 5 }, e: { r: 0, c: 7 } }];
+                ws['!cols'] = [{ wch: 12 }, { wch: 70 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }];
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Owner Passbook');
+                XLSX.writeFile(wb, `Owner_Passbook_${date}.xlsx`);
+            } else {
+                html2pdf().set(pdfOpts(`Owner_Passbook_${date}.pdf`)).from(document.getElementById('passbook-table')).save();
+            }
+        }
+
+        // ===== 5. KARIGAR PASSBOOK & REPORTS =====
+        function setReportView(v) {
+            reportView = v;
+            document.querySelectorAll('.rv-btn').forEach(b => b.classList.toggle('rv-active', b.dataset.v === v));
+            renderKarigarReport();
+        }
+
+        function clearKpFilters() {
+            document.getElementById('kp-karigar').value = '';
+            document.getElementById('kp-from').value = '';
+            document.getElementById('kp-to').value = '';
+            renderKarigarReport();
+        }
+
+        function kpRange() { return { from: val('kp-from'), to: val('kp-to') }; }
+
+        // Date-wise passbook per karigar: issues and receipts, with running balance held by karigar
+        function dateWiseData() {
+            const kid = val('kp-karigar');
+            const { from, to } = kpRange();
+            const ev = [];
+            db.slips.forEach(s => s.lines.forEach(l => ev.push({
+                date: s.date, seq: s.seq, kid: s.karigarId, slip: s.no, entry: 'Gold Issued',
+                cat: catName(l.catId), issued: l.issued, fg: 0, w: 0, pcs: 0
+            })));
+            db.returns.forEach(r => {
+                const s = slipById(r.slipId);
+                if (!s) return;
+                ev.push({
+                    date: r.date, seq: r.seq, kid: s.karigarId, slip: s.no, entry: 'Finished Goods Received',
+                    cat: catName(r.catId), issued: 0, fg: r.fg, w: r.wastage, pcs: r.pieces || 0
+                });
+            });
+            const filtered = ev.filter(e => !kid || e.kid === kid).sort(byDateSeq);
+            const held = {};
+            filtered.forEach(e => {
+                held[e.kid] = round3((held[e.kid] || 0) + e.issued - e.fg - e.w);
+                e.bal = held[e.kid];
+            });
+            const shown = filtered.filter(e => inRange(e.date, from, to));
+            const headers = [
+                { label: 'Date', type: 'date' }, { label: 'Karigar', type: 'text' }, { label: 'Slip No', type: 'text' },
+                { label: 'Entry', type: 'text' }, { label: 'Item', type: 'text' },
+                { label: 'Gold Issued (gm)', type: 'num' }, { label: 'Finished (gm)', type: 'num' },
+                { label: 'Wastage (gm)', type: 'num' }, { label: 'Wastage (%)', type: 'pct' },
+                { label: 'Pieces', type: 'int' }, { label: 'Held by Karigar (gm)', type: 'num' }
+            ];
+            const rows = shown.map(e => [
+                e.date, karigarName(e.kid), e.slip, e.entry, e.cat,
+                e.issued, e.fg, e.w, e.fg > 0 ? round3(e.w / e.fg * 100) : null,
+                e.pcs, e.bal
+            ]);
+            return { headers, rows, total: null };
+        }
+
+        // Aggregate for a filter over issue lines (date range applies to issue and receipt dates)
+        function aggregate(filter) {
+            const { from, to } = kpRange();
+            const out = { slipIds: new Set(), issued: 0, fg: 0, w: 0, pcs: 0, pend: 0 };
+            db.slips.forEach(s => s.lines.forEach(l => {
+                if (!filter(s, l)) return;
+                if (inRange(s.date, from, to)) { out.issued += l.issued; out.slipIds.add(s.id); }
+            }));
+            db.returns.forEach(r => {
+                const s = slipById(r.slipId);
+                if (!s || !filter(s, { catId: r.catId })) return;
+                if (inRange(r.date, from, to)) { out.fg += r.fg; out.w += r.wastage; out.pcs += r.pieces || 0; }
+            });
+            allLines().forEach(x => { if (filter(x.slip, x.line)) out.pend += x.pending; });
+            return {
+                slips: out.slipIds.size,
+                issued: round3(out.issued), fg: round3(out.fg), w: round3(out.w),
+                pcs: out.pcs, pend: round3(out.pend)
+            };
+        }
+
+        function aggRow(label, a) {
+            return [label, a.slips, a.issued, a.fg, a.w, a.fg > 0 ? round3(a.w / a.fg * 100) : null, a.pcs, a.pend];
+        }
+
+        const AGG_HEADERS = [
+            { label: 'Slips', type: 'int' }, { label: 'Gold Issued (gm)', type: 'num' },
+            { label: 'Finished (gm)', type: 'num' }, { label: 'Wastage (gm)', type: 'num' },
+            { label: 'Wastage (%)', type: 'pct' }, { label: 'Pieces', type: 'int' },
+            { label: 'Pending with Karigar (gm)', type: 'num' }
+        ];
+
+        function karigarWiseData() {
+            const headers = [{ label: 'Karigar', type: 'text' }, ...AGG_HEADERS];
+            const rows = db.karigars.map(k => aggRow(k.name, aggregate((s) => s.karigarId === k.id)));
+            const total = aggRow('Total', aggregate(() => true));
+            return { headers, rows, total };
+        }
+
+        function categoryWiseData() {
+            const headers = [{ label: 'Item', type: 'text' }, ...AGG_HEADERS];
+            const rows = db.cats.map(c => aggRow(c.name, aggregate((s, l) => l.catId === c.id)));
+            const total = aggRow('Total', aggregate(() => true));
+            return { headers, rows, total };
+        }
+
+        function fmtCell(v, type) {
+            if (v === null || v === undefined || v === '') return '-';
+            if (type === 'date') return fmtDate(v);
+            if (type === 'text') return esc(v);
+            if (type === 'int') return v ? String(v) : '-';
+            if (type === 'pct') return v === null ? '-' : f2(v) + '%';
+            return v ? f2(v) : '-';
+        }
+
+        function reportTableHtml(data) {
+            if (!data.rows.length) return '<p class="p-6 text-center text-slate-500 text-sm">No records for this selection</p>';
+            const head = data.headers.map(h =>
+                `<th class="px-3 py-2 ${h.type === 'text' || h.type === 'date' ? 'text-left' : 'text-right'} text-slate-400 font-medium whitespace-nowrap">${h.label}</th>`
+            ).join('');
+            const body = data.rows.map(r => `<tr class="border-b border-slate-700/30 hover:bg-slate-800/20">${
+                r.map((v, i) => {
+                    const t = data.headers[i].type;
+                    const cls = (t === 'text' || t === 'date') ? 'text-left' : 'text-right';
+                    const color = i >= 5 && t === 'num' ? 'text-amber-300' : '';
+                    return `<td class="px-3 py-2 ${cls} ${color} whitespace-nowrap">${fmtCell(v, t)}</td>`;
+                }).join('')
+            }</tr>`).join('');
+            let foot = '';
+            if (data.total) {
+                foot = `<tfoot><tr class="bg-slate-800/60 font-semibold border-t border-slate-600">${
+                    data.total.map((v, i) => {
+                        const t = data.headers[i].type;
+                        const cls = (t === 'text' || t === 'date') ? 'text-left' : 'text-right';
+                        return `<td class="px-3 py-2 ${cls} text-orange-300 whitespace-nowrap">${fmtCell(v, t)}</td>`;
+                    }).join('')
+                }</tr></tfoot>`;
+            }
+            return `<table id="kp-table" class="w-full text-xs"><thead class="bg-slate-800/50 border-b border-slate-700"><tr>${head}</tr></thead><tbody>${body}</tbody>${foot}</table>`;
+        }
+
+        function renderOverallCards() {
+            const t = aggregate(() => true);
+            const cards = [
+                ['Gold Issued (gm)', f2(t.issued), 'text-amber-400'],
+                ['Finished Goods (gm)', f2(t.fg), 'text-emerald-400'],
+                ['Wastage (gm)', f2(t.w), 'text-orange-400'],
+                ['Wastage (%)', t.fg > 0 ? f2(t.w / t.fg * 100) + '%' : '-', 'text-orange-300'],
+                ['Pieces Made', String(t.pcs), 'text-cyan-400'],
+                ['Pending with Karigars (gm)', f2(t.pend), 'text-purple-400']
+            ];
+            document.getElementById('kp-cards').innerHTML = cards.map(([l, v, c]) => `
+                <div class="bg-slate-900/50 border border-slate-700/40 rounded-lg p-3">
+                    <p class="text-xs text-slate-400 mb-1">${l}</p>
+                    <p class="text-lg font-bold ${c}">${v}</p>
+                </div>`).join('');
+        }
+
+        function renderKarigarReport() {
+            const cards = document.getElementById('kp-cards');
+            cards.classList.toggle('hidden', reportView !== 'overall');
+            let data;
+            if (reportView === 'date') data = dateWiseData();
+            else if (reportView === 'karigar') data = karigarWiseData();
+            else { renderOverallCards(); data = categoryWiseData(); }
+            document.getElementById('kp-table-wrap').innerHTML = reportTableHtml(data);
+        }
+
+        function pdfOpts(filename) {
+            return {
+                margin: 10,
+                filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
+            };
+        }
+
+        function toAoa(data) {
+            const head = data.headers.map(h => h.label);
+            const body = data.rows.map(r => r.map((v, i) => {
+                const t = data.headers[i].type;
+                if (t === 'date') return fmtDate(v);
+                if (t === 'pct') return v === null ? '' : v;
+                if (t === 'text') return v;
+                return v === null || v === undefined ? '' : v;
+            }));
+            const out = [head, ...body];
+            if (data.total) out.push(data.total.map(v => (v === null ? '' : v)));
+            return out;
+        }
+
+        function downloadKarigarReport(format) {
+            const date = todayIso();
+            if (format === 'excel') {
+                const wb = XLSX.utils.book_new();
+                const sheets = [
+                    ['Date-wise Passbook', dateWiseData()],
+                    ['Karigar-wise', karigarWiseData()],
+                    ['Overall Items', categoryWiseData()]
+                ];
+                sheets.forEach(([name, d]) => {
+                    if (!d.rows.length) return;
+                    const ws = XLSX.utils.aoa_to_sheet(toAoa(d));
+                    ws['!cols'] = d.headers.map((h, i) => ({ wch: i <= 1 ? 16 : 14 }));
+                    XLSX.utils.book_append_sheet(wb, ws, name);
+                });
+                if (!wb.SheetNames.length) { alert('No data to download'); return; }
+                XLSX.writeFile(wb, `Karigar_Reports_${date}.xlsx`);
+            } else {
+                const el = document.getElementById('kp-table');
+                if (!el) { alert('No data to download'); return; }
+                const names = { date: 'Karigar_Passbook', karigar: 'Karigar_Wise', overall: 'Overall_Items' };
+                html2pdf().set(pdfOpts(`${names[reportView]}_${date}.pdf`)).from(el).save();
+            }
+        }
+
+        // Keep the original "Excel/PDF" ledger download for the workshop table
+        function downloadLedger(format) {
+            const lines = allLines();
+            if (!lines.length) { alert('No data to download'); return; }
+            const date = todayIso();
+            if (format === 'excel') {
+                const data = lines.map(x => ({
+                    'Slip No': x.slip.no,
+                    'Issue Date': fmtDate(x.slip.date),
+                    'Karigar': karigarName(x.slip.karigarId),
+                    'Carat': x.slip.carat + 'K',
+                    'Item': catName(x.line.catId),
+                    'Issued (gm)': round3(x.line.issued),
+                    'Finished (gm)': x.fg,
+                    'Wastage (%)': (catById(x.line.catId) || {}).wastage || 0,
+                    'Wastage (gm)': x.wastage,
+                    'Pending (gm)': x.pending,
+                    'Status': x.pending <= 0.001 ? 'Completed' : (x.rcount ? 'Partly received' : 'Open')
+                }));
+                const ws = XLSX.utils.json_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Karigar Ledger');
+                XLSX.writeFile(wb, `Karigar_Ledger_${date}.xlsx`);
+            } else {
+                html2pdf().set(pdfOpts(`Karigar_Ledger_${date}.pdf`)).from(document.getElementById('ledger-table')).save();
+            }
+        }
+
+    </script>
+
+</body>
+</html>
