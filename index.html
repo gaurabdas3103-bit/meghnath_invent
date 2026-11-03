@@ -526,9 +526,27 @@
             return defaultDb();
         }
 
+        const SYNC_URL = 'https://script.google.com/macros/s/AKfycbxmkSAqtAj-MOzdszLhjS81a2MV-FIMJi698kpNNJXxq9VlywAdcaR0uXy5kXIRbYF6sQ/exec';
+
         function saveDb() {
             try { localStorage.setItem(STORE_KEY, JSON.stringify(db)); }
-            catch (e) { console.warn('Could not save data', e); }
+            catch (e) { console.warn('Could not save data locally', e); }
+            fetch(SYNC_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(db) })
+                .then(r => r.json())
+                .then(res => { if (!res.ok) alert('Warning: data was not saved to the cloud. Check your connection.'); })
+                .catch(() => alert('Warning: data was not saved to the cloud. Check your connection.'));
+        }
+
+        async function loadFromCloud() {
+            try {
+                const r = await fetch(SYNC_URL);
+                const remote = await r.json();
+                if (remote && Array.isArray(remote.slips)) {
+                    db = Object.assign(defaultDb(), remote);
+                    localStorage.setItem(STORE_KEY, JSON.stringify(db));
+                    renderAll();
+                }
+            } catch (e) { console.warn('Could not load from cloud; using local copy', e); }
         }
 
         let db = loadDb();
@@ -1320,6 +1338,7 @@
             }
         }
 
+            loadFromCloud();
     </script>
 
 </body>
