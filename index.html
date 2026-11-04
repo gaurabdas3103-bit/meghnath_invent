@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gold Management System - Own to Karigar</title>
+    <title>Meghnath Gold Management System - Own to Karigar</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -19,6 +19,68 @@
         .inp:focus { outline: none; border-color: #f59e0b; }
         .btn-del { background: #dc2626; color: #fff; font-size: .75rem; padding: .25rem .6rem; border-radius: .25rem; }
         .btn-del:hover { background: #ef4444; }
+    
+        /* ===== WHITE THEME ===== */
+        html, body { background: #ffffff !important; color: #0f172a !important; }
+        header { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
+        .bg-slate-900 { background-color: #ffffff !important; }
+        .bg-slate-900\/50, .bg-slate-900\/95 { background-color: #f8fafc !important; }
+        .bg-slate-800\/40, .bg-slate-800\/60 { background-color: #ffffff !important; }
+        .bg-slate-800, .bg-slate-800\/20, .bg-slate-800\/50 { background-color: #f1f5f9 !important; }
+        .hover\:bg-slate-800\/20:hover { background-color: #f1f5f9 !important; }
+        .bg-slate-700 { background-color: #e2e8f0 !important; }
+        .hover\:bg-slate-600:hover { background-color: #cbd5e1 !important; }
+        .bg-amber-900\/20 { background-color: #fffbeb !important; }
+        .bg-yellow-900\/20 { background-color: #fefce8 !important; }
+        .bg-gradient-to-r { background-image: linear-gradient(to right, #fffbeb, #fff7ed) !important; }
+        [class*="border-slate-"] { border-color: #cbd5e1 !important; }
+        .border-slate-800 { border-color: #e2e8f0 !important; }
+        .text-white, .text-slate-100, .text-slate-200 { color: #0f172a !important; }
+        .text-slate-300 { color: #334155 !important; }
+        .text-slate-400, .text-slate-500 { color: #64748b !important; }
+        .text-amber-300, .text-amber-400 { color: #b45309 !important; }
+        .text-yellow-300 { color: #a16207 !important; }
+        .text-emerald-300, .text-emerald-400 { color: #047857 !important; }
+        .text-purple-300, .text-purple-400 { color: #7e22ce !important; }
+        .text-orange-300, .text-orange-400 { color: #c2410c !important; }
+        .text-red-400 { color: #dc2626 !important; }
+        .text-green-400 { color: #15803d !important; }
+        .text-blue-300 { color: #1d4ed8 !important; }
+        /* keep white text on coloured buttons */
+        [class*="bg-blue-6"], [class*="bg-blue-5"], [class*="bg-green-6"], [class*="bg-green-5"],
+        [class*="bg-emerald-6"], [class*="bg-purple-6"], [class*="bg-red-6"], [class*="bg-red-5"],
+        [class*="bg-orange-5"], [class*="bg-pink-5"] { color: #ffffff !important; }
+        .inp, .editable-cell { background: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; }
+        .inp::placeholder { color: #94a3b8; }
+        .inp:focus { border-color: #f59e0b !important; }
+        .rv-btn { background: #e2e8f0 !important; color: #334155 !important; }
+        .rv-btn.rv-active { background: #ea580c !important; color: #ffffff !important; }
+    
+        /* ===== BRAND ===== */
+        .brand-title {
+            font-weight: 800;
+            font-size: 1.65rem;
+            line-height: 1.1;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #92400e 0%, #d97706 25%, #fbbf24 50%, #d97706 75%, #92400e 100%);
+            background-size: 220% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            animation: brandShine 7s linear infinite;
+        }
+        .brand-sub {
+            font-size: .68rem;
+            font-weight: 600;
+            letter-spacing: .3em;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-top: .3rem;
+        }
+        @keyframes brandShine { to { background-position: 220% center; } }
+        @media (prefers-reduced-motion: reduce) { .brand-title { animation: none; } }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100">
@@ -28,10 +90,21 @@
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-lg bg-amber-500 flex items-center justify-center font-bold text-slate-950 text-xl">💎</div>
+                    <svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MB logo">
+                        <defs>
+                            <linearGradient id="mbGold" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0" stop-color="#fde68a"/>
+                                <stop offset="0.5" stop-color="#f59e0b"/>
+                                <stop offset="1" stop-color="#b45309"/>
+                            </linearGradient>
+                        </defs>
+                        <rect x="1" y="1" width="42" height="42" rx="10" fill="url(#mbGold)"/>
+                        <rect x="4" y="4" width="36" height="36" rx="7" fill="none" stroke="#78350f" stroke-opacity="0.35" stroke-width="1"/>
+                        <text x="22" y="29" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="19" font-weight="700" fill="#1c1917" letter-spacing="1">MB</text>
+                    </svg>
                     <div>
-                        <h1 class="text-2xl font-bold text-white">Gold Management System</h1>
-                        <p class="text-xs text-slate-400">Complete Consignment & Tracking</p>
+                        <h1 class="brand-title">Meghnath Gold</h1>
+                        <p class="brand-sub">Gold Management System &middot; Own to Karigar</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
@@ -104,13 +177,19 @@
                                 <label class="block text-xs font-medium text-slate-400 mb-1">Weight (gm)</label>
                                 <input type="number" id="cons-weight" step="0.001" min="0" placeholder="e.g., 100" class="inp">
                             </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-400 mb-1">Date</label>
-                                <input type="date" id="cons-date" class="inp">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-400 mb-1">Description</label>
-                                <input type="text" id="cons-desc" placeholder="Gold Purchase 99.5" class="inp">
+                            <div class="col-span-2 grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-400 mb-1">Date</label>
+                                    <input type="date" id="cons-date" class="inp">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-400 mb-1">Description</label>
+                                    <input type="text" id="cons-desc" placeholder="Gold Purchase 99.5" class="inp">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-400 mb-1">Voucher No</label>
+                                    <input type="text" id="cons-voucher" placeholder="e.g., V-001" class="inp">
+                                </div>
                             </div>
                             <div class="col-span-2">
                                 <button onclick="receiveConsignment()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm py-2 px-4 rounded-lg transition">
@@ -265,6 +344,72 @@
                     </div>
                 </div>
 
+                <!-- Finished goods issue to company -->
+                <div class="bg-slate-900/50 border border-purple-700/30 rounded-lg p-4 space-y-3">
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <p class="text-sm font-semibold text-purple-300">Finished Goods Issue to Company</p>
+                        <span class="text-xs text-slate-400">Finished goods in hand: <span id="fg-avail-total" class="font-semibold text-emerald-400">0.00 gm</span></span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Slip No</label>
+                            <input type="text" id="fgi-slip" placeholder="e.g., FG-001" class="inp">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Date</label>
+                            <input type="date" id="fgi-date" class="inp">
+                        </div>
+                        <div class="lg:col-span-2">
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Company Name</label>
+                            <input type="text" id="fgi-company" list="company-list" placeholder="Type or pick a company" class="inp">
+                            <datalist id="company-list"></datalist>
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="issueFinishedToCompany()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-medium text-sm py-2 px-4 rounded-lg transition">✓ Issue to Company</button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto bg-slate-900/50 border border-slate-700/30 rounded-lg">
+                        <table class="w-full text-xs">
+                            <thead class="bg-slate-800/50 border-b border-slate-700">
+                                <tr>
+                                    <th class="px-2 py-2 text-center text-slate-400">Select</th>
+                                    <th class="px-2 py-2 text-left text-slate-400">Received</th>
+                                    <th class="px-2 py-2 text-left text-slate-400">Karigar</th>
+                                    <th class="px-2 py-2 text-left text-slate-400">Category</th>
+                                    <th class="px-2 py-2 text-center text-slate-400">Purity</th>
+                                    <th class="px-2 py-2 text-right text-slate-400">FG Received (gm)</th>
+                                    <th class="px-2 py-2 text-right text-emerald-400">Available (gm)</th>
+                                    <th class="px-2 py-2 text-right text-slate-400">Pcs Available</th>
+                                    <th class="px-2 py-2 text-left text-slate-400">Issue (gm)</th>
+                                    <th class="px-2 py-2 text-left text-slate-400">Issue (pcs)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fg-body"></tbody>
+                        </table>
+                    </div>
+                    <p class="text-xs text-slate-500">Tick the items to move to the company. Change the gm or pcs for a partial issue.</p>
+
+                    <div class="pt-2">
+                        <p class="text-xs font-semibold text-slate-400 mb-2">Finished Goods Issued to Company</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs">
+                                <thead class="bg-slate-800/50 border-b border-slate-700">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left text-slate-400">Date</th>
+                                        <th class="px-3 py-2 text-left text-slate-400">Slip No</th>
+                                        <th class="px-3 py-2 text-left text-slate-400">Company</th>
+                                        <th class="px-3 py-2 text-left text-slate-400">Items</th>
+                                        <th class="px-3 py-2 text-center text-slate-400">Purity</th>
+                                        <th class="px-3 py-2 text-right text-purple-300">Weight (gm)</th>
+                                        <th class="px-3 py-2 text-center text-slate-400">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fgi-log-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Open jobs table -->
                 <div class="overflow-x-auto">
                     <p class="text-xs font-semibold text-slate-400 mb-2">Jobs (issue lines)</p>
@@ -329,6 +474,7 @@
                             <tr>
                                 <th rowspan="2" class="px-3 py-2 text-left text-slate-400 align-bottom">Date</th>
                                 <th rowspan="2" class="px-3 py-2 text-left text-slate-400 align-bottom">Description</th>
+                                <th rowspan="2" class="px-3 py-2 text-left text-slate-400 align-bottom">Voucher No</th>
                                 <th colspan="3" class="px-3 py-2 text-center text-amber-400 font-semibold border-l border-slate-700">24K</th>
                                 <th colspan="3" class="px-3 py-2 text-center text-yellow-300 font-semibold border-l border-slate-700">22K</th>
                             </tr>
@@ -514,7 +660,8 @@
                 receipts: [],      // gold received from client: {id,date,carat,weight,desc,seq}
                 conversions: [],   // 24K -> 22K: {id,date,weight,seq}
                 slips: [],         // issue slips: {id,no,date,karigarId,carat,lines:[{id,catId,issued}],seq}
-                returns: []        // finished goods receipts: {id,date,slipId,lineId,catId,fg,wastage,pieces,seq}
+                returns: [],
+                companyIssues: []  // FG issued to company: {id,no,date,company,lines:[{id,returnId,catId,carat,pieces,weight}],seq}
             };
         }
 
@@ -583,7 +730,7 @@
         function buildPassbook() {
             const ev = [];
             db.receipts.forEach(r => ev.push({
-                date: r.date, seq: r.seq, desc: r.desc || 'Gold Consignment Received',
+                date: r.date, seq: r.seq, voucher: r.voucher || '', desc: r.desc || 'Gold Consignment Received',
                 i24: 0, r24: r.carat === '24' ? r.weight : 0,
                 i22: 0, r22: r.carat === '22' ? r.weight : 0
             }));
@@ -614,6 +761,14 @@
                     i22: 0, r22: carat === '22' ? amt : 0
                 });
             });
+            db.companyIssues.forEach(c => c.lines.forEach(l => {
+                ev.push({
+                    date: c.date, seq: c.seq, voucher: '',
+                    desc: `Finished Goods Issued To ${c.company} (${c.no}: ${catName(l.catId)}${l.pieces ? ' ' + l.pieces + ' pcs' : ''} ${f2(l.weight)} gm, ${l.carat}K)`,
+                    i24: l.carat === '24' ? l.weight : 0, r24: 0,
+                    i22: l.carat === '22' ? l.weight : 0, r22: 0
+                });
+            }));
             ev.sort(byDateSeq);
             let b24 = 0, b22 = 0;
             return ev.map(e => {
@@ -633,7 +788,7 @@
         // ===== INIT =====
         document.addEventListener('DOMContentLoaded', () => {
             setText('current-date', new Date().toLocaleDateString());
-            ['cons-date', 'conv-date', 'issue-date', 'recv-date'].forEach(id => document.getElementById(id).value = todayIso());
+            ['cons-date', 'conv-date', 'issue-date', 'recv-date', 'fgi-date'].forEach(id => document.getElementById(id).value = todayIso());
             renderIssueLines();
             renderAll();
         });
@@ -645,6 +800,8 @@
             renderLedger();
             renderReceiveSelect();
             renderPassbook();
+            renderFinishedGoods();
+            renderCompanyIssueLog();
             renderKarigarReport();
             renderSettings();
         }
@@ -652,7 +809,7 @@
         function renderBalances() {
             const b = balances();
             const pend = allLines().reduce((a, x) => a + x.pending, 0);
-            const fg = db.returns.reduce((a, r) => a + r.fg, 0);
+            const fg = round3(db.returns.reduce((a, r) => a + r.fg, 0) - fgIssuedWeight());
             const w = db.returns.reduce((a, r) => a + r.wastage, 0);
             setText('bal-24', f2(b.b24) + ' gm');
             setText('bal-22', f2(b.b22) + ' gm');
@@ -787,10 +944,13 @@
             const weight = num(val('cons-weight'));
             const date = val('cons-date');
             const desc = val('cons-desc').trim();
+            const voucher = val('cons-voucher').trim();
+            if (voucher && db.receipts.some(r => r.voucher === voucher) && !confirm('This voucher number is already used. Continue anyway?')) return;
             if (!carat || weight <= 0 || !date) { alert('Select carat, enter weight and date'); return; }
-            db.receipts.push({ id: uid(), date, carat, weight, desc, seq: nextSeq() });
+            db.receipts.push({ id: uid(), date, carat, weight, desc, voucher, seq: nextSeq() });
             document.getElementById('cons-weight').value = '';
             document.getElementById('cons-desc').value = '';
+            document.getElementById('cons-voucher').value = '';
             saveDb(); renderAll();
             alert(`✓ ${f2(weight)} gm ${carat}K added to balance`);
         }
@@ -815,7 +975,7 @@
 
         function renderConsignmentLog() {
             const items = [
-                ...db.receipts.map(r => ({ kind: 'receipt', id: r.id, date: r.date, seq: r.seq, type: 'Consignment', desc: r.desc || 'Gold Consignment Received', carat: r.carat, weight: r.weight })),
+                ...db.receipts.map(r => ({ kind: 'receipt', id: r.id, date: r.date, seq: r.seq, type: 'Consignment', desc: (r.desc || 'Gold Consignment Received') + (r.voucher ? ' [Voucher ' + r.voucher + ']' : ''), carat: r.carat, weight: r.weight })),
                 ...db.conversions.map(c => ({ kind: 'conversion', id: c.id, date: c.date, seq: c.seq, type: 'Conversion', desc: `Convert 24 to 22 K → ${f2(c.weight * db.factor)} gm 22K`, carat: '24→22', weight: c.weight }))
             ].sort((a, b) => byDateSeq(b, a));
             const tb = document.getElementById('cons-log-body');
@@ -1035,12 +1195,14 @@
         }
 
         function deleteReturn(id) {
+            if (fgIssuedReturnIds().has(id)) { alert('This receipt has finished goods already issued to a company. Delete that company issue first.'); return; }
             if (!confirm('Delete this finished goods receipt? The job will show the metal as pending again.')) return;
             db.returns = db.returns.filter(r => r.id !== id);
             saveDb(); renderAll();
         }
 
         function deleteSlip(id) {
+            if (db.returns.some(r => r.slipId === id && fgIssuedReturnIds().has(r.id))) { alert('This slip has finished goods already issued to a company. Delete that company issue first.'); return; }
             if (db.returns.some(r => r.slipId === id)) { alert('Delete the receipts for this slip first'); return; }
             if (!confirm('Delete this issue slip?')) return;
             db.slips = db.slips.filter(s => s.id !== id);
@@ -1054,12 +1216,13 @@
             const rows = buildPassbook();
             const tb = document.getElementById('passbook-body');
             if (!rows.length) {
-                tb.innerHTML = '<tr><td colspan="8" class="px-3 py-4 text-center text-slate-500">No transactions yet</td></tr>';
+                tb.innerHTML = '<tr><td colspan="9" class="px-3 py-4 text-center text-slate-500">No transactions yet</td></tr>';
             } else {
                 tb.innerHTML = rows.map(r => `
                     <tr class="border-b border-slate-700/30 hover:bg-slate-800/20">
                         <td class="px-3 py-2 whitespace-nowrap">${fmtDate(r.date)}</td>
                         <td class="px-3 py-2 text-xs">${esc(r.desc)}</td>
+                        <td class="px-3 py-2 text-xs whitespace-nowrap">${esc(r.voucher || '')}</td>
                         <td class="px-3 py-2 text-right text-red-400 border-l border-slate-700/40">${cellNum(r.i24)}</td>
                         <td class="px-3 py-2 text-right text-green-400">${cellNum(r.r24)}</td>
                         <td class="px-3 py-2 text-right font-semibold text-amber-400">${f2(r.b24)}</td>
@@ -1079,23 +1242,116 @@
             const date = todayIso();
             if (format === 'excel') {
                 const aoa = [
-                    ['', '', '24K', '', '', '22K', '', ''],
-                    ['Date', 'Description', 'Issue', 'Received', 'Balance', 'Issue', 'Received', 'Balance'],
+                    ['', '', '', '24K', '', '', '22K', '', ''],
+                    ['Date', 'Description', 'Voucher No', 'Issue', 'Received', 'Balance', 'Issue', 'Received', 'Balance'],
                     ...rows.map(r => [
-                        fmtDate(r.date), r.desc,
+                        fmtDate(r.date), r.desc, r.voucher || '',
                         r.i24 || '', r.r24 || '', r.b24,
                         r.i22 || '', r.r22 || '', r.b22
                     ])
                 ];
                 const ws = XLSX.utils.aoa_to_sheet(aoa);
-                ws['!merges'] = [{ s: { r: 0, c: 2 }, e: { r: 0, c: 4 } }, { s: { r: 0, c: 5 }, e: { r: 0, c: 7 } }];
-                ws['!cols'] = [{ wch: 12 }, { wch: 70 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }];
+                ws['!merges'] = [{ s: { r: 0, c: 3 }, e: { r: 0, c: 5 } }, { s: { r: 0, c: 6 }, e: { r: 0, c: 8 } }];
+                ws['!cols'] = [{ wch: 12 }, { wch: 70 }, { wch: 14 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }];
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, 'Owner Passbook');
                 XLSX.writeFile(wb, `Owner_Passbook_${date}.xlsx`);
             } else {
                 html2pdf().set(pdfOpts(`Owner_Passbook_${date}.pdf`)).from(document.getElementById('passbook-table')).save();
             }
+        }
+
+        // ===== 6. FINISHED GOODS ISSUE TO COMPANY =====
+        function fgIssuedReturnIds() {
+            return new Set(db.companyIssues.flatMap(c => c.lines.map(l => l.returnId)));
+        }
+        function fgIssuedWeight() {
+            return db.companyIssues.reduce((a, c) => a + c.lines.reduce((x, l) => x + l.weight, 0), 0);
+        }
+        function fgAvailable() {
+            return db.returns.filter(r => r.fg > 0).map(r => {
+                const s = slipById(r.slipId);
+                let usedW = 0, usedP = 0;
+                db.companyIssues.forEach(c => c.lines.forEach(l => {
+                    if (l.returnId === r.id) { usedW += l.weight; usedP += l.pieces || 0; }
+                }));
+                return { r, s, avail: round3(r.fg - usedW), pcsAvail: Math.max(0, (r.pieces || 0) - usedP) };
+            }).filter(x => x.avail > 0.0005).sort((a, b) => byDateSeq(a.r, b.r));
+        }
+
+        function renderFinishedGoods() {
+            const rows = fgAvailable();
+            setText('fg-avail-total', f2(rows.reduce((a, x) => a + x.avail, 0)) + ' gm');
+            document.getElementById('fg-body').innerHTML = rows.length ? rows.map(({ r, s, avail, pcsAvail }) => `
+                <tr class="border-b border-slate-700/30 hover:bg-slate-800/20">
+                    <td class="px-2 py-2 text-center"><input type="checkbox" id="fgc-${r.id}" class="w-4 h-4 accent-purple-500"></td>
+                    <td class="px-2 py-2 whitespace-nowrap">${fmtDate(r.date)}</td>
+                    <td class="px-2 py-2">${esc(s ? karigarName(s.karigarId) : '(removed)')}</td>
+                    <td class="px-2 py-2">${esc(catName(r.catId))}</td>
+                    <td class="px-2 py-2 text-center">${s ? s.carat : '-'}K</td>
+                    <td class="px-2 py-2 text-right">${f2(r.fg)}</td>
+                    <td class="px-2 py-2 text-right font-semibold text-emerald-400">${f2(avail)}</td>
+                    <td class="px-2 py-2 text-right">${r.pieces ? pcsAvail : '-'}</td>
+                    <td class="px-2 py-2"><input type="number" id="fgw-${r.id}" step="0.001" min="0" max="${avail}" value="${avail}" class="inp w-24"></td>
+                    <td class="px-2 py-2"><input type="number" id="fgp-${r.id}" step="1" min="0" max="${pcsAvail}" value="${pcsAvail}" class="inp w-20"></td>
+                </tr>`).join('')
+                : '<tr><td colspan="10" class="px-3 py-4 text-center text-slate-500">No finished goods in hand to issue</td></tr>';
+            const companies = [...new Set(db.companyIssues.map(c => c.company))].sort();
+            document.getElementById('company-list').innerHTML = companies.map(c => `<option value="${esc(c)}"></option>`).join('');
+        }
+
+        function issueFinishedToCompany() {
+            const no = val('fgi-slip').trim();
+            const date = val('fgi-date');
+            const company = val('fgi-company').trim();
+            if (!no || !date || !company) { alert('Enter slip no, date and company name'); return; }
+            if (db.companyIssues.some(c => c.no.toLowerCase() === no.toLowerCase())) { alert('This slip number is already used'); return; }
+            const lines = [];
+            for (const x of fgAvailable()) {
+                const box = document.getElementById('fgc-' + x.r.id);
+                if (!box || !box.checked) continue;
+                const w = round3(num(document.getElementById('fgw-' + x.r.id).value));
+                const p = parseInt(document.getElementById('fgp-' + x.r.id).value) || 0;
+                if (w <= 0) { alert(`Enter the weight to issue for ${catName(x.r.catId)}`); return; }
+                if (w > x.avail + 0.0005) { alert(`Only ${f2(x.avail)} gm available for ${catName(x.r.catId)}`); return; }
+                if (p > x.pcsAvail) { alert(`Only ${x.pcsAvail} pcs available for ${catName(x.r.catId)}`); return; }
+                lines.push({ id: uid(), returnId: x.r.id, catId: x.r.catId, carat: x.s ? x.s.carat : '22', pieces: p, weight: w });
+            }
+            if (!lines.length) { alert('Tick at least one finished goods item'); return; }
+            db.companyIssues.push({ id: uid(), no, date, company, lines, seq: nextSeq() });
+            document.getElementById('fgi-slip').value = '';
+            saveDb(); renderAll();
+            alert(`✓ Issued ${lines.length} item(s) to ${company} (Slip ${no})`);
+        }
+
+        function renderCompanyIssueLog() {
+            const tb = document.getElementById('fgi-log-body');
+            const list = [...db.companyIssues].sort((a, b) => byDateSeq(b, a));
+            if (!list.length) {
+                tb.innerHTML = '<tr><td colspan="7" class="px-3 py-4 text-center text-slate-500">No finished goods issued to company yet</td></tr>';
+                return;
+            }
+            tb.innerHTML = list.map(c => {
+                const wt = c.lines.reduce((a, l) => a + l.weight, 0);
+                const lineText = c.lines.map(l => `${esc(catName(l.catId))} ${l.pieces ? l.pieces + ' pcs ' : ''}${f2(l.weight)} gm`).join('<br>');
+                const carats = [...new Set(c.lines.map(l => l.carat))].join('/') + 'K';
+                return `
+                <tr class="border-b border-slate-700/30 hover:bg-slate-800/20">
+                    <td class="px-3 py-2 whitespace-nowrap">${fmtDate(c.date)}</td>
+                    <td class="px-3 py-2">${esc(c.no)}</td>
+                    <td class="px-3 py-2">${esc(c.company)}</td>
+                    <td class="px-3 py-2 text-xs">${lineText}</td>
+                    <td class="px-3 py-2 text-center">${carats}</td>
+                    <td class="px-3 py-2 text-right font-semibold text-purple-300">${f2(wt)}</td>
+                    <td class="px-3 py-2 text-center"><button onclick="deleteCompanyIssue('${c.id}')" class="btn-del">Delete</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function deleteCompanyIssue(id) {
+            if (!confirm('Delete this finished goods issue? The goods will show as available again and the passbook will be recalculated.')) return;
+            db.companyIssues = db.companyIssues.filter(c => c.id !== id);
+            saveDb(); renderAll();
         }
 
         // ===== 5. KARIGAR PASSBOOK & REPORTS =====
