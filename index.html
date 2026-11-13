@@ -116,14 +116,17 @@
                     </button>
                 </div>
             </div>
-
+                <nav class="flex gap-2 pt-1">
+                    <button data-page="inventory" onclick="showPage('inventory')" class="nav-tab px-5 py-2 rounded-lg font-semibold text-sm transition bg-slate-800 text-slate-300 hover:bg-slate-700">📦 Inventory</button>
+                    <button data-page="accounts" onclick="showPage('accounts')" class="nav-tab px-5 py-2 rounded-lg font-semibold text-sm transition bg-slate-800 text-slate-300 hover:bg-slate-700">💰 Accounts</button>
+                </nav>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-8">
 
         <!-- ===== OWN TO KARIGAR PAGE ===== -->
-        <div id="page-karigar" class="space-y-8">
+        <div id="page-inventory" class="space-y-8">
 
             <!-- Owner's Balance -->
             <section class="bg-gradient-to-r from-amber-900/30 to-orange-900/20 border border-amber-700/50 p-6 rounded-xl">
@@ -546,6 +549,113 @@
         </div>
 
 
+    <!-- ===== ACCOUNTS PAGE ===== -->
+    <div id="page-accounts" class="hidden space-y-8">
+
+        <!-- Summary -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5">
+                <p class="text-xs uppercase tracking-wider text-slate-400">Total Invoiced</p>
+                <p id="acct-inv-total" class="text-2xl font-bold text-blue-300 mt-1">0.00</p>
+            </div>
+            <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5">
+                <p class="text-xs uppercase tracking-wider text-slate-400">Total Received</p>
+                <p id="acct-rec-total" class="text-2xl font-bold text-emerald-400 mt-1">0.00</p>
+            </div>
+            <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5">
+                <p class="text-xs uppercase tracking-wider text-slate-400">Outstanding Balance</p>
+                <p id="acct-out-total" class="text-2xl font-bold text-amber-400 mt-1">0.00</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Invoice Issue -->
+            <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 space-y-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                    <h3 class="text-lg font-semibold text-blue-300">Invoice Issue</h3>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Date</label>
+                        <input type="date" id="inv-date" class="inp">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Voucher No</label>
+                        <input type="text" id="inv-voucher" placeholder="e.g., INV-001" class="inp">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Narration</label>
+                        <input type="text" id="inv-narr" value="Invoice Amount" class="inp">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Amount</label>
+                        <input type="number" step="0.01" min="0" id="inv-amount" placeholder="e.g., 741147" class="inp">
+                    </div>
+                </div>
+                <button onclick="addInvoice()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm py-2.5 px-4 rounded-lg transition">✓ Add Invoice</button>
+            </div>
+
+            <!-- Payment Received -->
+            <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 space-y-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <h3 class="text-lg font-semibold text-emerald-400">Payment Received</h3>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Date</label>
+                        <input type="date" id="pay-date" class="inp">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Voucher No</label>
+                        <input type="text" id="pay-voucher" placeholder="e.g., RCP-001" class="inp">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Narration</label>
+                        <input type="text" id="pay-narr" value="Payment Received" class="inp">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Amount</label>
+                        <input type="number" step="0.01" min="0" id="pay-amount" placeholder="e.g., 542839.74" class="inp">
+                    </div>
+                </div>
+                <button onclick="addPayment()" class="w-full bg-green-600 hover:bg-green-500 text-white font-medium text-sm py-2.5 px-4 rounded-lg transition">✓ Add Payment</button>
+            </div>
+        </div>
+
+        <!-- Accounts passbook -->
+        <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5">
+            <div class="flex justify-between items-center flex-wrap gap-3 mb-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-100">Accounts Passbook</h3>
+                    <p class="text-xs text-slate-400">Credit = invoices issued &middot; Debit = payments received &middot; Balance = still to be received</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="downloadAccounts('excel')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm py-2 px-4 rounded-lg transition">📊 Excel</button>
+                    <button onclick="downloadAccounts('pdf')" class="bg-red-600 hover:bg-red-500 text-white font-medium text-sm py-2 px-4 rounded-lg transition">📄 PDF</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table id="acct-table" class="w-full text-sm">
+                    <thead class="bg-slate-800/50 border-b border-slate-700">
+                        <tr>
+                            <th class="px-3 py-2 text-left text-slate-400">Date</th>
+                            <th class="px-3 py-2 text-left text-slate-400">Voucher</th>
+                            <th class="px-3 py-2 text-left text-slate-400">Narration</th>
+                            <th class="px-3 py-2 text-right text-slate-400">Credit</th>
+                            <th class="px-3 py-2 text-right text-slate-400">Debit</th>
+                            <th class="px-3 py-2 text-right text-slate-400">Balance</th>
+                            <th class="px-3 py-2 text-center text-slate-400">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="acct-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     </main>
 
     <!-- Settings Modal -->
@@ -661,7 +771,9 @@
                 conversions: [],   // 24K -> 22K: {id,date,weight,seq}
                 slips: [],         // issue slips: {id,no,date,karigarId,carat,lines:[{id,catId,issued}],seq}
                 returns: [],
-                companyIssues: []  // FG issued to company: {id,no,date,company,lines:[{id,returnId,catId,carat,pieces,weight}],seq}
+                companyIssues: [],  // FG issued to company: {id,no,date,company,lines:[{id,returnId,catId,carat,pieces,weight}],seq}
+                invoices: [],     // accounts: {id,date,voucher,narration,amount,seq}
+                payments: [],    // accounts: {id,date,voucher,narration,amount,seq}
             };
         }
 
@@ -788,9 +900,10 @@
         // ===== INIT =====
         document.addEventListener('DOMContentLoaded', () => {
             setText('current-date', new Date().toLocaleDateString());
-            ['cons-date', 'conv-date', 'issue-date', 'recv-date', 'fgi-date'].forEach(id => document.getElementById(id).value = todayIso());
+            ['cons-date', 'conv-date', 'issue-date', 'recv-date', 'fgi-date', 'inv-date', 'pay-date'].forEach(id => document.getElementById(id).value = todayIso());
             renderIssueLines();
             renderAll();
+            showPage('inventory');
         });
 
         function renderAll() {
@@ -803,6 +916,7 @@
             renderFinishedGoods();
             renderCompanyIssueLog();
             renderKarigarReport();
+            renderAccounts();
             renderSettings();
         }
 
@@ -1258,6 +1372,148 @@
                 XLSX.writeFile(wb, `Owner_Passbook_${date}.xlsx`);
             } else {
                 html2pdf().set(pdfOpts(`Owner_Passbook_${date}.pdf`)).from(document.getElementById('passbook-table')).save();
+            }
+        }
+
+        // ===== 7. NAVIGATION & ACCOUNTS =====
+        function showPage(name) {
+            document.getElementById('page-inventory').classList.toggle('hidden', name !== 'inventory');
+            document.getElementById('page-accounts').classList.toggle('hidden', name !== 'accounts');
+            document.querySelectorAll('.nav-tab').forEach(b => {
+                const on = b.dataset.page === name;
+                b.classList.toggle('bg-amber-500', on);
+                b.classList.toggle('text-slate-950', on);
+                b.classList.toggle('shadow-lg', on);
+                b.classList.toggle('bg-slate-800', !on);
+                b.classList.toggle('text-slate-300', !on);
+            });
+            window.scrollTo(0, 0);
+        }
+
+        const money = n => (Math.round(n * 100) / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        function buildAccounts() {
+            const ev = [
+                ...db.invoices.map(x => ({ kind: 'inv', id: x.id, date: x.date, seq: x.seq, voucher: x.voucher || '', narration: x.narration || 'Invoice Amount', credit: x.amount, debit: 0 })),
+                ...db.payments.map(x => ({ kind: 'pay', id: x.id, date: x.date, seq: x.seq, voucher: x.voucher || '', narration: x.narration || 'Payment Received', credit: 0, debit: x.amount }))
+            ].sort(byDateSeq);
+            let bal = 0;
+            return ev.map(e => {
+                bal = Math.round((bal + e.credit - e.debit) * 100) / 100;
+                return { ...e, balance: bal };
+            });
+        }
+
+        function accountTotals(rows) {
+            const inv = rows.reduce((a, r) => a + r.credit, 0);
+            const rec = rows.reduce((a, r) => a + r.debit, 0);
+            return { inv, rec, out: inv - rec };
+        }
+
+        function accountRowsHtml(rows, withAction) {
+            return rows.map(r => `
+                <tr class="border-b border-slate-700/30 hover:bg-slate-800/20">
+                    <td class="px-3 py-2 whitespace-nowrap">${fmtDate(r.date)}</td>
+                    <td class="px-3 py-2">${esc(r.voucher)}</td>
+                    <td class="px-3 py-2 ${r.kind === 'inv' ? 'text-blue-300' : 'text-emerald-400'}">${esc(r.narration)}</td>
+                    <td class="px-3 py-2 text-right">${r.credit ? money(r.credit) : ''}</td>
+                    <td class="px-3 py-2 text-right">${r.debit ? money(r.debit) : ''}</td>
+                    <td class="px-3 py-2 text-right font-semibold">${money(r.balance)}</td>
+                    ${withAction ? `<td class="px-3 py-2 text-center"><button onclick="deleteAccountEntry('${r.kind}','${r.id}')" class="btn-del">Delete</button></td>` : ''}
+                </tr>`).join('');
+        }
+
+        function renderAccounts() {
+            const rows = buildAccounts();
+            const t = accountTotals(rows);
+            setText('acct-inv-total', money(t.inv));
+            setText('acct-rec-total', money(t.rec));
+            setText('acct-out-total', money(t.out));
+            document.getElementById('acct-body').innerHTML = rows.length
+                ? accountRowsHtml(rows, true)
+                : '<tr><td colspan="7" class="px-3 py-4 text-center text-slate-500">No invoices or payments yet</td></tr>';
+        }
+
+        function accountVoucherUsed(voucher) {
+            return [...db.invoices, ...db.payments].some(x => (x.voucher || '').toLowerCase() === voucher.toLowerCase());
+        }
+
+        function addInvoice() {
+            const date = val('inv-date');
+            const voucher = val('inv-voucher').trim();
+            const narration = val('inv-narr').trim() || 'Invoice Amount';
+            const amount = Math.round(num(val('inv-amount')) * 100) / 100;
+            if (!date || amount <= 0) { alert('Enter the date and amount'); return; }
+            if (voucher && accountVoucherUsed(voucher) && !confirm('This voucher number is already used. Continue anyway?')) return;
+            db.invoices.push({ id: uid(), date, voucher, narration, amount, seq: nextSeq() });
+            document.getElementById('inv-voucher').value = '';
+            document.getElementById('inv-amount').value = '';
+            document.getElementById('inv-narr').value = 'Invoice Amount';
+            saveDb(); renderAll();
+        }
+
+        function addPayment() {
+            const date = val('pay-date');
+            const voucher = val('pay-voucher').trim();
+            const narration = val('pay-narr').trim() || 'Payment Received';
+            const amount = Math.round(num(val('pay-amount')) * 100) / 100;
+            if (!date || amount <= 0) { alert('Enter the date and amount'); return; }
+            if (voucher && accountVoucherUsed(voucher) && !confirm('This voucher number is already used. Continue anyway?')) return;
+            db.payments.push({ id: uid(), date, voucher, narration, amount, seq: nextSeq() });
+            document.getElementById('pay-voucher').value = '';
+            document.getElementById('pay-amount').value = '';
+            document.getElementById('pay-narr').value = 'Payment Received';
+            saveDb(); renderAll();
+        }
+
+        function deleteAccountEntry(kind, id) {
+            if (!confirm('Delete this entry? The passbook balance will be recalculated.')) return;
+            if (kind === 'inv') db.invoices = db.invoices.filter(x => x.id !== id);
+            else db.payments = db.payments.filter(x => x.id !== id);
+            saveDb(); renderAll();
+        }
+
+        function downloadAccounts(format) {
+            const rows = buildAccounts();
+            if (!rows.length) { alert('No data to download'); return; }
+            const date = todayIso();
+            if (format === 'excel') {
+                const aoa = [
+                    ['Date', 'Voucher', 'Narration', 'Credit', 'Debit', 'Balance'],
+                    ...rows.map(r => [fmtDate(r.date), r.voucher, r.narration, r.credit || '', r.debit || '', r.balance])
+                ];
+                const ws = XLSX.utils.aoa_to_sheet(aoa);
+                ws['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 22 }, { wch: 14 }, { wch: 14 }, { wch: 16 }];
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Accounts');
+                XLSX.writeFile(wb, `Accounts_Passbook_${date}.xlsx`);
+            } else {
+                const cell = 'border:1px solid #cbd5e1;padding:5px 6px;';
+                const wrap = document.createElement('div');
+                wrap.style.cssText = 'position:absolute;left:0;top:0;width:760px;padding:16px;background:#ffffff;color:#0f172a;font-family:Arial,sans-serif;z-index:-1;';
+                wrap.innerHTML = `
+                    <h2 style="font-size:18px;font-weight:700;margin:0 0 2px">Meghnath Gold - Accounts Passbook</h2>
+                    <p style="font-size:11px;color:#64748b;margin:0 0 10px">As on ${date}</p>
+                    <table style="width:100%;border-collapse:collapse;font-size:11px">
+                        <thead><tr style="background:#f1f5f9">
+                            <th style="${cell}text-align:left">Date</th>
+                            <th style="${cell}text-align:left">Voucher</th>
+                            <th style="${cell}text-align:left">Narration</th>
+                            <th style="${cell}text-align:right">Credit</th>
+                            <th style="${cell}text-align:right">Debit</th>
+                            <th style="${cell}text-align:right">Balance</th>
+                        </tr></thead>
+                        <tbody>${rows.map(r => `<tr>
+                            <td style="${cell}white-space:nowrap">${fmtDate(r.date)}</td>
+                            <td style="${cell}">${esc(r.voucher)}</td>
+                            <td style="${cell}">${esc(r.narration)}</td>
+                            <td style="${cell}text-align:right">${r.credit ? money(r.credit) : ''}</td>
+                            <td style="${cell}text-align:right">${r.debit ? money(r.debit) : ''}</td>
+                            <td style="${cell}text-align:right;font-weight:bold">${money(r.balance)}</td>
+                        </tr>`).join('')}</tbody>
+                    </table>`;
+                document.body.appendChild(wrap);
+                html2pdf().set(pdfOpts(`Accounts_Passbook_${date}.pdf`)).from(wrap).save().then(() => wrap.remove());
             }
         }
 
